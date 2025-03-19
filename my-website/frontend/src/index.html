@@ -1,0 +1,169 @@
+<!-- filepath: /Users/rachelpan/Documents/UTSC/CSCC43/project/my-website/frontend/src/index.html -->
+  <body>
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>My Stock App</title>
+        <link rel="stylesheet" href="styles/style.css" />
+      </head>
+      <body>
+        <header>
+          <h1>C43 Stock App</h1>
+          <button id="logout-button" style="display: none">Logout</button>
+        </header>
+        <main>
+          <div id="auth-status"></div>
+          <section class="form-container">
+            <form id="register-form">
+              <h2>Sign Up</h2>
+              <input
+                type="text"
+                id="reg-username"
+                placeholder="Username"
+                required
+              />
+              <input
+                type="password"
+                id="reg-password"
+                placeholder="Password"
+                required
+              />
+              <input type="email" id="reg-email" placeholder="Email" required />
+              <button type="submit">Register</button>
+            </form>
+          </section>
+          <section class="form-container">
+            <form id="login-form">
+              <h2>Login</h2>
+              <input
+                type="text"
+                id="username"
+                placeholder="Username"
+                required
+              />
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+              />
+              <button type="submit">Login</button>
+            </form>
+          </section>
+          <section id="cash-management">
+            <h2>Manage Cash</h2>
+            <div id="cash-balance"></div>
+            <form id="deposit-form">
+              <input
+                type="number"
+                id="deposit-amount"
+                placeholder="Amount to deposit"
+                required
+              />
+              <button type="submit">Deposit</button>
+            </form>
+            <form id="withdraw-form">
+              <input
+                type="number"
+                id="withdraw-amount"
+                placeholder="Amount to withdraw"
+                required
+              />
+              <button type="submit">Withdraw</button>
+            </form>
+          </section>
+          <section id="stock-section">
+            <h2>Add Stock to Portfolio</h2>
+            <input type="text" id="stock-search" placeholder="Search Stocks" />
+            <ul id="stock-search-results"></ul>
+            <form id="add-stock-form">
+              <select id="portfolio-select" required>
+                <option value="" disabled selected>Select Portfolio</option>
+                <!-- Portfolio options will be populated dynamically -->
+              </select>
+              <input
+                type="text"
+                class="stock-symbol"
+                placeholder="Stock Symbol"
+                required
+              />
+              <input
+                type="number"
+                class="shares"
+                placeholder="Shares"
+                required
+              />
+              <button type="submit">Add Stock</button>
+            </form>
+            <div id="stock-details"></div>
+          </section>
+          <section id="portfolio-section">
+            <h2>My Portfolios</h2>
+            <form id="create-portfolio-form">
+              <input
+                type="text"
+                id="portfolio-name"
+                placeholder="Portfolio Name"
+                required
+              />
+              <button type="submit">Create Portfolio</button>
+            </form>
+            <ul id="portfolio-list"></ul>
+            <div id="portfolio-details"></div>
+          </section>
+          <section id="add-daily-stock-section">
+            <h2>Add New Daily Stock Information</h2>
+            <form id="add-daily-stock-form">
+              <input type="date" id="stock-date" placeholder="Date" required />
+              <input
+                type="text"
+                id="stock-code"
+                placeholder="Stock Code"
+                required
+              />
+              <input
+                type="number"
+                step="0.01"
+                id="stock-open"
+                placeholder="Open Price"
+                required
+              />
+              <input
+                type="number"
+                step="0.01"
+                id="stock-high"
+                placeholder="High Price"
+                required
+              />
+              <input
+                type="number"
+                step="0.01"
+                id="stock-low"
+                placeholder="Low Price"
+                required
+              />
+              <input
+                type="number"
+                step="0.01"
+                id="stock-close"
+                placeholder="Close Price"
+                required
+              />
+              <input
+                type="number"
+                id="stock-volume"
+                placeholder="Volume"
+                required
+              />
+              <button type="submit">Add Daily Stock</button>
+            </form>
+          </section>
+        </main>
+        <script type="module" src="scripts/main.js"></script>
+      </body>
+    </html>
+    <script type="module" src="scripts/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "live-server src"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
