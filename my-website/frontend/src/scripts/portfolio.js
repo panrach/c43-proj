@@ -122,7 +122,7 @@ export const fetchUserCash = async (userId) => {
         });
         const result = await response.json();
         if (response.ok) {
-            document.getElementById('cash-balance').innerText = `Cash Balance: $${result.cash}`;
+            document.getElementById('cash-balance').innerText = `Cash Balance: $${result.balance}`;
             return result.balance;
         } else {
             alert(result.error || 'Error fetching cash balance');

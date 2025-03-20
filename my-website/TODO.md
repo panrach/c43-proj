@@ -16,7 +16,7 @@
 ### 3. Stock Management
 - **Fetch and display stock information** x
 - **Add new daily stock information** x
-- **Integrate historical and new stock data**
+- **Integrate historical and new stock data** x
 
 ### 4. Portfolio Analysis
 - **Calculate and display portfolio statistics (COV, Beta, correlation matrix)**

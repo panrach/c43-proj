@@ -103,14 +103,16 @@ router.get("/portfolio/:portfolioId", async (req, res) => {
   }
 });
 
-// delete a stock from a portfolio
-router.delete("/delete", async (req, res) => {
-  const portfolioId = req.body.portfolioId;
-  const code = req.body.stockSymbol;
+// Get the value of a stock in a portfolio
+
+// Sell a stock from a portfolio
+router.post("/sell", async (req, res) => {
+  const { portfolioId, stockSymbol, shares } = req.body;
+
   try {
     // Check if the portfolio exists in the portfolios table
     const portfolioCheck = await pool.query(
-      "SELECT id FROM portfolios WHERE id = $1",
+      "SELECT id, user_id FROM portfolios WHERE id = $1",
       [portfolioId]
     );
 
@@ -121,19 +123,52 @@ router.delete("/delete", async (req, res) => {
         .json({ error: "Portfolio does not exist in the portfolios table" });
     }
 
-    // Delete the stock from the stock_holdings table
-    const result = await pool.query(
-      "DELETE FROM stock_holdings WHERE portfolio_id = $1 AND stock_code = $2",
-      [portfolioId, code]
+    const userId = portfolioCheck.rows[0].user_id;
+
+    // Check if the stock exists in the stock_holdings table
+    const stockCheck = await pool.query(
+      "SELECT shares FROM stock_holdings WHERE portfolio_id = $1 AND stock_code = $2",
+      [portfolioId, stockSymbol]
     );
 
-    if (result.rowCount === 0) {
+    if (stockCheck.rows.length === 0) {
+      console.log("Stock does not exist in the portfolio");
       return res
-        .status(404)
-        .json({ error: "Stock not found in the portfolio" });
+        .status(400)
+        .json({ error: "Stock does not exist in the portfolio" });
     }
 
-    res.status(200).json({ message: "Stock deleted successfully" });
+    const currentShares = stockCheck.rows[0].shares;
+    const stockPrice = await getStockPrice(stockSymbol);
+
+    if (currentShares < shares) {
+      return res.status(400).json({ error: "Not enough shares to sell" });
+    }
+
+    const newShares = currentShares - shares;
+    const valueOfSoldShares = shares * stockPrice;
+
+    if (newShares === 0) {
+      // Delete the stock from the stock_holdings table
+      await pool.query(
+        "DELETE FROM stock_holdings WHERE portfolio_id = $1 AND stock_code = $2",
+        [portfolioId, stockSymbol]
+      );
+    } else {
+      // Update the number of shares in the stock_holdings table
+      await pool.query(
+        "UPDATE stock_holdings SET shares = $1 WHERE portfolio_id = $2 AND stock_code = $3",
+        [newShares, portfolioId, stockSymbol]
+      );
+    }
+
+    // Add the value of the sold shares to the user's cash balance
+    const updateBalanceResult = await pool.query(
+      "UPDATE users SET balance = balance + $1 WHERE id = $2 RETURNING balance",
+      [valueOfSoldShares, userId]
+    );
+    const updatedBalance = updateBalanceResult.rows[0].balance;
+    res.status(200).json({ message: "Stock sold successfully" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: err.detail });
@@ -181,6 +216,62 @@ router.post("/add-daily", async (req, res) => {
       [date, code, open, high, low, close, volume]
     );
     res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.detail });
+  }
+});
+
+const getStockPrice = async (stockCode) => {
+  try {
+    const result = await pool.query(
+      `SELECT close AS last_close_price
+       FROM stocks
+       WHERE code = $1
+       ORDER BY timestamp DESC
+       LIMIT 1`,
+      [stockCode]
+    );
+
+    if (result.rows.length === 0) {
+      throw new Error("Stock not found");
+    }
+
+    const lastClosePrice = result.rows[0].last_close_price;
+    return lastClosePrice;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// Fetch historical stock data
+router.get("/historical/:stockCode", async (req, res) => {
+  const { stockCode } = req.params;
+  const { interval } = req.query;
+  const intervalDays = parseInt(interval, 10);
+  console.log("Interval:", intervalDays);
+
+  try {
+    const result = await pool.query(
+      `SELECT * FROM stocks WHERE code = $1 AND timestamp >= NOW() - INTERVAL '${intervalDays} days' ORDER BY timestamp ASC`,
+      [stockCode]
+    );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.detail });
+  }
+});
+
+// Fetch new stock data
+router.get("/latest/:stockCode", async (req, res) => {
+  const { stockCode } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT * FROM stocks WHERE code = $1 ORDER BY timestamp DESC LIMIT 1",
+      [stockCode]
+    );
+    res.status(200).json(result.rows[0]);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: err.detail });

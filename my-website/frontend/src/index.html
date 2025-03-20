@@ -7,6 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>My Stock App</title>
         <link rel="stylesheet" href="styles/style.css" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
       </head>
       <body>
         <header>
@@ -75,6 +77,19 @@
             </form>
           </section>
           <section id="stock-section">
+            <h2>Stock Data</h2>
+            <input type="text" id="stock-code-input" placeholder="Enter Stock Code" />
+            <select id="interval-select">
+              <option value="7">1 Week</option>
+              <option value="30">1 Month</option>
+              <option value="90">1 Quarter</option>
+              <option value="1825">5 Years</option>
+              <option value="5475">15 Years</option>
+            </select>
+            <button id="fetch-stock-data">Fetch Stock Data</button>
+            <div id="latest-stock-details"></div>
+            <canvas id="historical-stock-chart"></canvas>
+          </section id="add-stock-section">
             <h2>Add Stock to Portfolio</h2>
             <input type="text" id="stock-search" placeholder="Search Stocks" />
             <ul id="stock-search-results"></ul>

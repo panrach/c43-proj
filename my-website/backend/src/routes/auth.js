@@ -35,12 +35,14 @@ router.post('/login', async (req, res) => {
             const match = await bcrypt.compare(password, user.password);
             if (match) {
                 user = { id: user.id, username: user.username, email: user.email };
+                req.session.user = user;
                 req.session.save((err) => {
                     if (err) {
                         console.log('Error saving session:', err);
                         res.status(500).send('Internal Server Error');
                     } else {
                         console.log('Logged in as:', user.username);
+                        // console.log('Session:', req.session);
                         res.send('Login successful');
                     }
                 });

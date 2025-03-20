@@ -11,6 +11,8 @@ export const checkAuthStatus = async (loadHomepage, loadAuth, logSessionCookie) 
             const parts = status.split(' ');
             const username = parts[3]; // Extract username from status message
             const userId = parts[4]; // Extract userId from status message
+            // // store the userId in local storage
+            localStorage.setItem('userId', userId);
             loadHomepage(username, userId);
         } else {
             loadAuth();
@@ -86,6 +88,8 @@ export const logoutUser = async (loadAuth, logSessionCookie) => {
         });
         const result = await response.text();
         logSessionCookie(); // Log the session cookie
+        // Clear local storage
+        localStorage.clear();
         loadAuth();
     } catch (error) {
         console.error('Error logging out:', error);

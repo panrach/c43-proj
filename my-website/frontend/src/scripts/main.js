@@ -11,9 +11,21 @@ import {
   withdrawCash,
   fetchUserCash,
 } from "./portfolio.js";
-import { fetchStocks, addStock, searchStocks, addDailyStock, deleteStock } from "./stocks.js";
+import { fetchStocks, addStock, searchStocks, addDailyStock, sellStock } from "./stocks.js";
 
 const baseUrl = "http://localhost:3000";
+
+export const handlePortfolioClick = (portfolioId, portfolioElement) => {
+  const stockSection = portfolioElement.querySelector(".stock-section");
+  const stockList = portfolioElement.querySelector(".stock-list");
+
+  if (stockSection.style.display === "none") {
+    stockSection.style.display = "block";
+    fetchStocks(portfolioId, stockList);
+  } else {
+    stockSection.style.display = "none";
+  }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   const authStatus = document.getElementById("auth-status");
@@ -68,18 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   addStockForm.addEventListener("submit", (e) => addStock(e, fetchStocks));
 
-  const handlePortfolioClick = (portfolioId, portfolioElement) => {
-    const stockSection = portfolioElement.querySelector(".stock-section");
-    const stockList = portfolioElement.querySelector(".stock-list");
-
-    if (stockSection.style.display === "none") {
-      stockSection.style.display = "block";
-      fetchStocks(portfolioId, stockList);
-    } else {
-      stockSection.style.display = "none";
-    }
-  };
-
   const loadHomepage = async (username, id) => {
     userId = id;
     authStatus.textContent = `Welcome, ${username}`;
@@ -98,6 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
     stockSection.style.display = "block"; // Show stock section on homepage
     portfolioSection.style.display = "block"; // Show portfolio section on homepage
     addDailyStockForm.style.display = "block"; // Show add daily stock form on homepage
+    stockSection.style.display = "block"; // Hide stock section on homepage
+
 
     // Update portfolio dropdown
     await updatePortfolioDropdown(userId);
