@@ -1,7 +1,7 @@
 # To Do
 
 ### 1. User Authentication
-- **Register for an account**
+- **Register for an account** x
 - **Log in** x
 - **Log out** x
 - **Check authentication status** x
