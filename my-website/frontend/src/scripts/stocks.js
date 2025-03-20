@@ -164,29 +164,32 @@ export const searchStocks = async (query, searchResults) => {
 
 export const fetchStockDetails = async (code) => {
   try {
-    const response = await fetch(`${baseUrl}/stocks/details/${code}`, {
-      credentials: "include", // Include credentials for session handling
-    });
-    const stock = await response.json();
-    displayStockDetails(stock);
+    const historicalData = await fetchHistoricalStockData(code, 5475);
+    console.log("Stock Details:", historicalData);
+    displayHistoricalStockData(historicalData);
+
+    const latestData = await fetchLatestStockData(code);
+    displayLatestStockData(latestData);
+
+    document.getElementById("stock-section").scrollIntoView({ behavior: "smooth" });
   } catch (error) {
     console.error("Error fetching stock details:", error);
   }
 };
 
-const displayStockDetails = (stock) => {
-  const stockDetails = document.getElementById("stock-details");
-  console.log(stock);
-  stockDetails.innerHTML = `
-      <h3>${stock.code}</h3>
-      <p>Open: ${stock.open}</p>
-      <p>High: ${stock.high}</p>
-      <p>Low: ${stock.low}</p>
-      <p>Close: ${stock.close}</p>
-      <p>Volume: ${stock.volume}</p>
-      <p>Timestamp: ${stock.timestamp}</p>
-    `;
-};
+// const displayStockDetails = (stock) => {
+//   const stockDetails = document.getElementById("stock-details");
+//   console.log(stock);
+//   stockDetails.innerHTML = `
+//       <h3>${stock.code}</h3>
+//       <p>Open: ${stock.open}</p>
+//       <p>High: ${stock.high}</p>
+//       <p>Low: ${stock.low}</p>
+//       <p>Close: ${stock.close}</p>
+//       <p>Volume: ${stock.volume}</p>
+//       <p>Timestamp: ${stock.timestamp}</p>
+//     `;
+// };
 
 export const addDailyStock = async (e) => {
   e.preventDefault();
