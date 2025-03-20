@@ -20,7 +20,7 @@
 
 ### 4. Portfolio Analysis
 - **Calculate and display portfolio statistics (COV, Beta, correlation matrix)**
-- **Display historical prices of stocks in a portfolio**
+- **Display historical prices of stocks in a portfolio** x
 - **Predict future prices of stocks**
 
 ### 5. Social Networking
