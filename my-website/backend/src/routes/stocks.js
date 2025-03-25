@@ -278,4 +278,98 @@ router.get("/latest/:stockCode", async (req, res) => {
   }
 });
 
+const calculateLinearRegression = (data) => {
+  const n = data.length;
+  const sumX = data.reduce((sum, point, index) => sum + index, 0);
+  const sumY = data.reduce((sum, point) => sum + parseFloat(point.close), 0);
+  const sumXY = data.reduce(
+    (sum, point, index) => sum + index * parseFloat(point.close),
+    0
+  );
+  const sumX2 = data.reduce((sum, point, index) => sum + index * index, 0);
+
+  console.log("n:", n);
+  console.log("sumX:", sumX);
+  console.log("sumY:", sumY);
+  console.log("sumXY:", sumXY);
+  console.log("sumX2:", sumX2);
+
+  const denominator = n * sumX2 - sumX * sumX;
+  if (denominator === 0) {
+    console.error("Denominator is zero, cannot calculate slope and intercept.");
+    return { slope: NaN, intercept: NaN };
+  }
+
+  const slope = (n * sumXY - sumX * sumY) / denominator;
+  const intercept = (sumY - slope * sumX) / n;
+
+  console.log("slope:", slope);
+  console.log("intercept:", intercept);
+
+  return { slope, intercept };
+};
+
+const predictFuturePrices = (
+  slope,
+  intercept,
+  daysIntoFuture,
+  historicalData
+) => {
+  const lastIndex = historicalData.length - 1;
+  const futurePrices = [];
+
+  for (let i = 1; i <= daysIntoFuture; i++) {
+    const futureIndex = lastIndex + i;
+    const futurePrice = slope * futureIndex + intercept;
+    futurePrices.push(futurePrice);
+  }
+
+  return futurePrices;
+};
+
+router.get("/predict-prices/:stockCode", async (req, res) => {
+  const { stockCode } = req.params;
+  try {
+    const result = await pool.query(
+      `
+      WITH historical_data AS (
+        SELECT timestamp AS date, close, ROW_NUMBER() OVER (ORDER BY timestamp) - 1 AS index
+        FROM stocks
+        WHERE code = $1
+        ORDER BY timestamp ASC
+      ),
+      regression AS (
+        SELECT
+          COUNT(*) AS n,
+          SUM(index) AS sumX,
+          SUM(close) AS sumY,
+          SUM(index * close) AS sumXY,
+          SUM(index * index) AS sumX2
+        FROM historical_data
+      ),
+      parameters AS (
+        SELECT
+          (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX) AS slope,
+          (sumY - ((n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)) * sumX) / n AS intercept
+        FROM regression
+      ),
+      future_prices AS (
+        SELECT
+          slope * (index + i) + intercept AS future_price
+        FROM parameters, generate_series(1, 5) AS i, (SELECT MAX(index) AS index FROM historical_data) AS max_index
+      )
+      SELECT future_price AS close
+      FROM future_prices
+      `,
+      [stockCode]
+    );
+
+    const futurePrices = result.rows.map(row => row.close);
+    res.status(200).json({ futurePrices });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.detail });
+  }
+});
+
 export default router;

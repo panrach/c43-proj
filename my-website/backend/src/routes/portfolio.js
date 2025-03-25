@@ -86,7 +86,6 @@ router.post('/withdraw', async (req, res) => {
 });
 
 router.get('/:userId/balance', async (req, res) => {
-    console.log("poop")
     const {userId} = req.params;
     try {
         const result = await pool.query('SELECT balance FROM users WHERE id = $1', [userId]);

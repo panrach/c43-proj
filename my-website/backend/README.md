@@ -28,116 +28,185 @@ To get started with the backend, follow these steps:
     - **index.js**: Defines the API routes.
 
 ## DB Schema
+
 ```sql
+-- public.stocks definition
+
+-- Drop table
+
+-- DROP TABLE stocks;
+
+	CREATE TABLE stocks (
+		id serial4 NOT NULL,
+		"timestamp" date NULL,
+		"open" numeric NULL,
+		high numeric NULL,
+		low numeric NULL,
+		"close" numeric NULL,
+		volume int8 NULL,
+		code varchar(10) NOT NULL,
+		CONSTRAINT stocks_pkey PRIMARY KEY (id)
+	);
+
+
+-- public.users definition
+
+-- Drop table
+
+-- DROP TABLE users;
+
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    balance NUMERIC DEFAULT 0
+	id serial4 NOT NULL,
+	username varchar(50) NOT NULL,
+	"password" varchar(255) NOT NULL,
+	email varchar(100) NOT NULL,
+	balance numeric DEFAULT 0 NULL,
+	CONSTRAINT users_email_key UNIQUE (email),
+	CONSTRAINT users_pkey PRIMARY KEY (id),
+	CONSTRAINT users_username_key UNIQUE (username)
 );
 
-CREATE TABLE portfolios (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    name VARCHAR(100) NOT NULL
-);
 
-CREATE TABLE stocks (
-    id SERIAL PRIMARY KEY,
-    timestamp DATE,
-    open NUMERIC,
-    high NUMERIC,
-    low NUMERIC,
-    close NUMERIC,
-    volume BIGINT,
-    code VARCHAR(10),
-    UNIQUE (timestamp, code)
-);
+-- public.friends definition
 
-CREATE TABLE stock_holdings (
-    id SERIAL PRIMARY KEY,
-    portfolio_id INTEGER REFERENCES portfolios(id),
-    stock_symbol VARCHAR(10) REFERENCES stocks(symbol),
-    shares INTEGER NOT NULL,
-    UNIQUE (portfolio_id, stock_symbol)
-);
-```
+-- Drop table
 
-new schema
-```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    balance NUMERIC DEFAULT 0
-);
-
-CREATE TABLE portfolios (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    name VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE stocks (
-    id SERIAL PRIMARY KEY,
-    timestamp DATE,
-    open NUMERIC,
-    high NUMERIC,
-    low NUMERIC,
-    close NUMERIC,
-    volume BIGINT,
-    code VARCHAR(10) NOT NULL
-);
-
-CREATE TABLE stock_holdings (
-    id SERIAL PRIMARY KEY,
-    portfolio_id INTEGER REFERENCES portfolios(id),
-    stock_id INTEGER REFERENCES stocks(id),
-    shares INTEGER NOT NULL,
-    UNIQUE (portfolio_id, stock_id)
-);
+-- DROP TABLE friends;
 
 CREATE TABLE friends (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    friend_id INTEGER REFERENCES users(id),
-    status VARCHAR(20) NOT NULL -- e.g., 'pending', 'accepted'
+	id serial4 NOT NULL,
+	user_id int4 NULL,
+	friend_id int4 NULL,
+	status varchar(20) NOT NULL,
+	CONSTRAINT friends_pkey PRIMARY KEY (id),
+	CONSTRAINT friends_friend_id_fkey FOREIGN KEY (friend_id) REFERENCES users(id),
+	CONSTRAINT friends_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+
+-- public.portfolios definition
+
+-- Drop table
+
+-- DROP TABLE portfolios;
+
+CREATE TABLE portfolios (
+	id serial4 NOT NULL,
+	user_id int4 NULL,
+	"name" varchar(100) NOT NULL,
+	CONSTRAINT portfolios_pkey PRIMARY KEY (id),
+	CONSTRAINT portfolios_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+-- public.stock_holdings definition
+
+-- Drop table
+
+-- DROP TABLE stock_holdings;
+
+CREATE TABLE stock_holdings (
+	id serial4 NOT NULL,
+	portfolio_id int4 NULL,
+	stock_code varchar(10) NULL,
+	shares int4 NOT NULL,
+	CONSTRAINT stock_holdings_pkey PRIMARY KEY (id),
+	CONSTRAINT stock_holdings_portfolio_id_stock_code_key UNIQUE (portfolio_id, stock_code),
+	CONSTRAINT stock_holdings_portfolio_id_fkey FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
+);
+
+
+-- public.stock_lists definition
+
+-- Drop table
+
+-- DROP TABLE stock_lists;
 
 CREATE TABLE stock_lists (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id),
-    name VARCHAR(100) NOT NULL,
-    is_public BOOLEAN DEFAULT FALSE
+	id serial4 NOT NULL,
+	user_id int4 NULL,
+	"name" varchar(100) NOT NULL,
+	is_public bool DEFAULT false NULL,
+	CONSTRAINT stock_lists_pkey PRIMARY KEY (id),
+	CONSTRAINT stock_lists_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE stock_list_items (
-    id SERIAL PRIMARY KEY,
-    stock_list_id INTEGER REFERENCES stock_lists(id),
-    stock_id INTEGER REFERENCES stocks(id),
-    UNIQUE (stock_list_id, stock_id)
-);
+
+-- public.reviews definition
+
+-- Drop table
+
+-- DROP TABLE reviews;
 
 CREATE TABLE reviews (
-    id SERIAL PRIMARY KEY,
-    stock_list_id INTEGER REFERENCES stock_lists(id),
-    user_id INTEGER REFERENCES users(id),
-    rating INTEGER NOT NULL,
-    comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	id serial4 NOT NULL,
+	stock_list_id int4 NULL,
+	user_id int4 NULL,
+	rating int4 NOT NULL,
+	"comment" text NULL,
+	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT reviews_pkey PRIMARY KEY (id),
+	CONSTRAINT reviews_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id),
+	CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+
+-- public.stock_list_items definition
+
+-- Drop table
+
+-- DROP TABLE stock_list_items;
+
+CREATE TABLE stock_list_items (
+	id serial4 NOT NULL,
+	stock_list_id int4 NULL,
+	stock_id int4 NULL,
+	CONSTRAINT stock_list_items_pkey PRIMARY KEY (id),
+	CONSTRAINT stock_list_items_stock_list_id_stock_id_key UNIQUE (stock_list_id, stock_id),
+	CONSTRAINT stock_list_items_stock_id_fkey FOREIGN KEY (stock_id) REFERENCES stocks(id),
+	CONSTRAINT stock_list_items_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id)
+);
+
+CREATE MATERIALIZED VIEW public.stock_statistics_matrix
+TABLESPACE pg_default
+AS WITH daily_market_avg_close AS (
+    -- Compute the daily market average close price
+    SELECT s."timestamp", 
+           AVG(s."close") AS market_close
+    FROM stocks s
+    GROUP BY s."timestamp"
+), daily_pairs AS (
+    -- Pair up stocks by matching timestamps
+    SELECT s1.code AS stock1,
+           s2.code AS stock2,
+           s1."close" AS close1,
+           s2."close" AS close2
+    FROM stocks s1
+    JOIN stocks s2 
+        ON s1."timestamp" = s2."timestamp" 
+       AND s1.code <= s2.code  -- Prevent duplicate pairs
+    UNION ALL
+    -- Compute each stock’s beta against the market
+    SELECT s1.code AS stock1,
+           s1.code AS stock2,  -- Self-pairing for beta calculation
+           s1."close" AS close1,
+           m.market_close AS close2
+    FROM stocks s1
+    JOIN daily_market_avg_close m 
+        ON s1."timestamp" = m."timestamp"
+)
+-- Compute correlation, covariance, and beta
+SELECT stock1, 
+       stock2, 
+       CORR(close1::double precision, close2::double precision) AS correlation,
+       COVAR_POP(close1::double precision, close2::double precision) AS covariance,
+       CASE 
+           WHEN stock1 = stock2 THEN 
+               COVAR_POP(close1::double precision, close2::double precision) / 
+               NULLIF(VAR_POP(close2::double precision), 0)
+           ELSE NULL 
+       END AS beta
+FROM daily_pairs
+GROUP BY stock1, stock2
+WITH DATA;
 ```
-
-## API Endpoints
-
-The backend exposes various API endpoints that the frontend can interact with. Refer to the `index.js` file in the routes directory for detailed information on the available endpoints.
-
-## Contributing
-
-If you wish to contribute to the backend, please fork the repository and submit a pull request with your changes. Make sure to follow the coding standards and include tests for new features.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more information.

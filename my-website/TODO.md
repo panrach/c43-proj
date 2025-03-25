@@ -19,14 +19,14 @@
 - **Integrate historical and new stock data** x
 
 ### 4. Portfolio Analysis
-- **Calculate and display portfolio statistics (COV, Beta, correlation matrix)**
+- **Calculate and display portfolio statistics (COV, Beta, correlation matrix)** x
 - **Display historical prices of stocks in a portfolio** x
-- **Predict future prices of stocks**
+- **Predict future prices of stocks** x
 
 ### 5. Social Networking
-- **Send and accept friend requests**
-- **View and manage friends**
-- **Delete friends**
+- **Send and accept friend requests** x
+- **View and manage friends** x
+- **Delete friends** x
 
 ### 6. Stock List Sharing
 - **Create and manage stock lists**

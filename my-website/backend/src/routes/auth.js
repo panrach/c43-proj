@@ -70,7 +70,7 @@ router.get('/status', (req, res) => {
     req.session.user = user;
     if (req.session.user) {
         console.log('Logged in as:', req.session.user.username, "with id:", req.session.user.id);
-        res.send(`Logged in as ${req.session.user.username} ${req.session.user.id}`);
+        res.send(`Logged in as ${req.session.user.username} ${req.session.user.id} ${req.session.user.email}`);
     } else {
         res.send('Not logged in');
     }

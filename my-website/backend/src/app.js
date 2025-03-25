@@ -5,6 +5,8 @@ import indexRouter from './routes/index.js';
 import authRouter from './routes/auth.js';
 import portfolioRouter from './routes/portfolio.js';
 import stockRouter from './routes/stocks.js';
+import statisticsRouter from './routes/statistics.js';
+import friendsRouter from './routes/friends.js';
 import cors from 'cors';
 import corsOptions from '../config/corsConfig.js';
 
@@ -17,14 +19,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     secret: 'yefefaefsfkaehfoaiuehf',
     resave: false,
-    saveUninitialized: false, // Ensure the session is not saved unless modified
-    cookie: { secure: false } // Set to true if using HTTPS
+    saveUninitialized: false,
+    cookie: { secure: false }
 }));
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
 app.use('/portfolio', portfolioRouter);
 app.use('/stocks', stockRouter);
+app.use('/statistics', statisticsRouter);
+app.use('/friends', friendsRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

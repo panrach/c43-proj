@@ -11,8 +11,10 @@ export const checkAuthStatus = async (loadHomepage, loadAuth, logSessionCookie) 
             const parts = status.split(' ');
             const username = parts[3]; // Extract username from status message
             const userId = parts[4]; // Extract userId from status message
+            const userEmail = parts[5]; // Extract userEmail from status message
             // // store the userId in local storage
             localStorage.setItem('userId', userId);
+            localStorage.setItem('userEmail', userEmail);
             loadHomepage(username, userId);
         } else {
             loadAuth();

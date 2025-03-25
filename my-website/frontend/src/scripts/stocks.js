@@ -61,7 +61,7 @@ export const fetchStocks = async (portfolioId, stockList) => {
       stockList.appendChild(li);
 
       li.addEventListener("click", () => {
-        fetchStockDetails(stock.stock_code);
+        fetchStockDetails(stock.stock_code, 5475);
       });
     });
   } catch (error) {
@@ -153,7 +153,7 @@ export const searchStocks = async (query, searchResults) => {
       li.addEventListener("click", () => {
         document.querySelector(".stock-symbol").value = stock.code;
         searchResults.innerHTML = "";
-        fetchStockDetails(stock.code);
+        fetchStockDetails(stock.code, 5475);
       });
       searchResults.appendChild(li);
     });
@@ -162,16 +162,29 @@ export const searchStocks = async (query, searchResults) => {
   }
 };
 
-export const fetchStockDetails = async (code) => {
+export const fetchStockDetails = async (code, interval) => {
   try {
-    const historicalData = await fetchHistoricalStockData(code, 5475);
-    console.log("Stock Details:", historicalData);
-    displayHistoricalStockData(historicalData);
+    const historicalData = await fetchHistoricalStockData(code, interval);
+    // console.log("Stock Details:", historicalData);
+
+    const futureDataResponse = await fetch(
+      `${baseUrl}/stocks/predict-prices/${code}`,
+      {
+        credentials: "include", // Include credentials for session handling
+      }
+    );
+    const futureDataResult = await futureDataResponse.json();
+    console.log("Future Data:", futureDataResult);
+    const futureData = futureDataResult.futurePrices;
+
+    displayHistoricalStockData(historicalData, futureData);
 
     const latestData = await fetchLatestStockData(code);
     displayLatestStockData(latestData);
 
-    document.getElementById("stock-section").scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("stock-section")
+      .scrollIntoView({ behavior: "smooth" });
   } catch (error) {
     console.error("Error fetching stock details:", error);
   }
@@ -235,12 +248,32 @@ const displayLatestStockData = (stockData) => {
 };
 
 // Display historical stock data
-const displayHistoricalStockData = (historicalData) => {
+const displayHistoricalStockData = (historicalData, futureData) => {
   const ctx = document
     .getElementById("historical-stock-chart")
     .getContext("2d");
-  const labels = historicalData.map((data) => data.timestamp);
+  let labels = historicalData.map((data) => data.timestamp);
   const closePrices = historicalData.map((data) => data.close);
+
+  // If labels are empty, generate 10 future labels starting from today
+  if (labels.length === 0) {
+    const today = new Date();
+    labels = Array.from({ length: 10 }, (_, index) => {
+      const futureDate = new Date(today);
+      futureDate.setDate(today.getDate() + index + 1);
+      return futureDate.toISOString().split("T")[0];
+    });
+  }
+  // Add future data to labels and closePrices
+  const futureLabels = futureData.map((_, index) => {
+    const lastDate = new Date(labels[labels.length - 1]);
+    lastDate.setDate(lastDate.getDate() + index + 1);
+    return lastDate.toISOString().split("T")[0];
+  });
+  const futurePrices = futureData;
+
+  const allLabels = labels.concat(futureLabels);
+  const allPrices = closePrices.concat(futurePrices);
 
   // Destroy the existing chart if it exists
   if (historicalChart) {
@@ -250,13 +283,21 @@ const displayHistoricalStockData = (historicalData) => {
   historicalChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: labels,
+      labels: allLabels,
       datasets: [
         {
           label: "Close Price",
-          data: closePrices,
+          data: allPrices,
           borderColor: "rgba(75, 192, 192, 1)",
           borderWidth: 1,
+          fill: false,
+        },
+        {
+          label: "Predicted Price",
+          data: new Array(closePrices.length).fill(null).concat(futurePrices),
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 1,
+          borderDash: [5, 5],
           fill: false,
         },
       ],
@@ -280,9 +321,12 @@ const displayHistoricalStockData = (historicalData) => {
 // Fetch historical stock data
 export const fetchHistoricalStockData = async (stockCode, interval) => {
   try {
-    const response = await fetch(`${baseUrl}/stocks/historical/${stockCode}?interval=${interval}`, {
-      credentials: "include", // Include credentials for session handling
-    });
+    const response = await fetch(
+      `${baseUrl}/stocks/historical/${stockCode}?interval=${interval}`,
+      {
+        credentials: "include", // Include credentials for session handling
+      }
+    );
     const result = await response.json();
     if (response.ok) {
       return result;
@@ -326,7 +370,8 @@ document
 
     if (historicalData) {
       console.log("Historical Data:", historicalData);
-      displayHistoricalStockData(historicalData);
+      // displayHistoricalStockData(historicalData);
+      fetchStockDetails(stockCode, interval);
     }
 
     if (latestData) {
@@ -334,4 +379,3 @@ document
       displayLatestStockData(latestData);
     }
   });
-

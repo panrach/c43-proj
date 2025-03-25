@@ -76,6 +76,18 @@
               <button type="submit">Withdraw</button>
             </form>
           </section>
+          <section id="friends-section">
+            <div>
+              <input type="text" id="friend-email-input" placeholder="Friend Email" />
+              <button id="send-request-button">Send Friend Request</button>
+              <button id="view-friends-button">View Friends</button>
+              <button id="view-requests-button">View Friend Requests</button>
+              <ul id="friends-list"></ul>
+              <ul id="friend-requests-list"></ul>
+            </div>
+            <ul id="friends-list"></ul>
+            <ul id="friend-requests-list"></ul>
+          </section>
           <section id="stock-section">
             <h2>Stock Data</h2>
             <input type="text" id="stock-code-input" placeholder="Enter Stock Code" />
@@ -89,7 +101,6 @@
             <button id="fetch-stock-data">Fetch Stock Data</button>
             <div id="latest-stock-details"></div>
             <canvas id="historical-stock-chart"></canvas>
-          </section id="add-stock-section">
             <h2>Add Stock to Portfolio</h2>
             <input type="text" id="stock-search" placeholder="Search Stocks" />
             <ul id="stock-search-results"></ul>
@@ -114,6 +125,7 @@
             </form>
             <div id="stock-details"></div>
           </section>
+          </section id="add-stock-section">
           <section id="portfolio-section">
             <h2>My Portfolios</h2>
             <form id="create-portfolio-form">
@@ -127,6 +139,18 @@
             </form>
             <ul id="portfolio-list"></ul>
             <div id="portfolio-details"></div>
+          </section>
+          <section id="statistics-section">
+            <h2>Portfolio Statistics</h2>
+            <div id="covariance-matrix">
+              <h3>Covariance Matrix</h3>
+            </div>
+            <div id="correlation-matrix">
+              <h3>Correlation Matrix</h3>
+            </div>
+            <div id="beta">
+              <h3>Beta</h3>
+            </div>
           </section>
           <section id="add-daily-stock-section">
             <h2>Add New Daily Stock Information</h2>
