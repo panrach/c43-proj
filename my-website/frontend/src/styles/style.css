@@ -6,25 +6,29 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f9f9f9;
   color: #333;
+  line-height: 1.6;
 }
 
 header {
-  background-color: #333;
+  background-color: #37b7e6; /* Darker header color */
   color: #fff;
-  padding: 1rem;
+  padding: 1.5rem;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
   margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 main {
   padding: 2rem;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -32,19 +36,21 @@ main {
   background-color: #fff;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border-left: 8px solid #ff6f61; /* Add a left border accent */
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 form h2 {
   margin-bottom: 1rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
+  color: #2d3e50;
 }
 
 input[type="text"],
@@ -52,29 +58,40 @@ input[type="password"],
 input[type="email"],
 input[type="number"],
 input[type="date"] {
-  padding: 0.75rem;
+  padding: 1rem;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 1rem;
+  transition: border-color 0.3s ease;
+  background-color: #fff; /* White background for inputs */
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus {
+  border-color: #000000; /* Accent color on focus */
+  outline: none;
 }
 
 button {
-  padding: 0.75rem;
+  padding: 1rem;
   font-size: 1rem;
   color: #fff;
-  background-color: #333;
+  background-color: #6997af; /* Brighter button color */
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-bottom: 1rem;
 }
 
 button:hover {
-  background-color: #555;
+  background-color: #688da1; /* Darker shade for hover */
 }
 
 #auth-status {
@@ -91,8 +108,9 @@ button:hover {
   background-color: #fff;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border-left: 8px solid #88c2e1; /* Blue accent border */
 }
 
 #stock-list li,
@@ -100,32 +118,35 @@ button:hover {
 #friends-list li,
 #friend-requests-list li {
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  margin-bottom: 0.75rem;
   transition: background-color 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #stock-list li:hover,
 #portfolio-list li:hover,
 #friends-list li:hover,
 #friend-requests-list li:hover {
-  background-color: #f0f0f0;
+  background-color: #f2f2f2;
 }
 
 #stock-details {
   background-color: #fff;
-  padding: 1rem;
+  padding: 1.5rem;
   margin-top: 1rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
 footer {
   text-align: center;
   padding: 1rem;
-  background-color: #333;
+  background-color: #2d3e50;
   color: #fff;
   position: fixed;
   width: 100%;
@@ -145,10 +166,10 @@ footer {
 
 .dropdown select {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   font-size: 1rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -175,7 +196,7 @@ table {
 
 th, td {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
   text-align: center;
 }
 
@@ -185,11 +206,11 @@ th {
 }
 
 tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #fafafa;
 }
 
 tr:hover {
-  background-color: #f1f1f1;
+  background-color: #f0f0f0;
 }
 
 /* Friends Section Specific Styles */
@@ -225,14 +246,15 @@ tr:hover {
   background-color: #fff;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border-left: 8px solid #88c2e1; /* Blue accent border */
 }
 
 #stock-list-section form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 #stock-list-section ul {
@@ -244,15 +266,15 @@ tr:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem;
+  padding: 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
+  border-radius: 5px;
+  margin-bottom: 0.75rem;
   transition: background-color 0.3s ease;
 }
 
 #stock-list-section li:hover {
-  background-color: #f0f0f0;
+  background-color: #f2f2f2;
 }
 
 #stock-list-section li button {

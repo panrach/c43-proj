@@ -34,12 +34,12 @@ export const createStockList = async (userId, name, stocks) => {
 };
 
 // Share a stock list with a friend
-export const shareStockList = async (listId, friendEmail) => {
+export const shareStockList = async (listId, friendEmail, userId) => {
   try {
     const response = await fetch(`${baseUrl}/share`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listId, friendEmail }),
+      body: JSON.stringify({ listId, friendEmail, userId }),
     });
     if (!response.ok) {
       throw new Error("Failed to share stock list");

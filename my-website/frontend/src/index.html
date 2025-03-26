@@ -200,9 +200,7 @@
             </form>
           </section>
           <section id="stock-list-section">
-            <h2>Your Stock Lists</h2>
-            <ul id="user-stock-lists"></ul>
-          
+            <h2>Stock Lists</h2>
             <h3>Create a New Stock List</h3>
             <form id="create-stock-list-form">
               <input type="text" id="stock-list-name" placeholder="List Name" required />
@@ -215,6 +213,18 @@
             <button id="make-stock-list-public">Make Public</button>
             <button id="delete-stock-list">Delete</button>
 
+            <div id="add-stock-to-list-section">
+              <h3>Add Stock to Stock List</h3>
+              <form id="add-stock-to-list-form">
+                <input type="text" id="stock-list-name-input" placeholder="Stock List Name" required />
+                <input type="text" id="stock-code-list-input" placeholder="Stock Code" required />
+                <button type="submit">Add Stock</button>
+              </form>
+            </div>
+
+            <h3>View Stock Lists</h3>
+            <ul id="user-stock-lists"></ul>
+          
             
           </section>
         </main>

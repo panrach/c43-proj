@@ -29,10 +29,10 @@
 - **Delete friends** x
 
 ### 6. Stock List Sharing
-- **Create and manage stock lists**
-- **Share stock lists with friends**
-- **Make stock lists public**
-- **View shared and public stock lists**
+- **Create and manage stock lists** x
+- **Share stock lists with friends** x
+- **Make stock lists public** x
+- **View shared and public stock lists** x
 
 ### 7. Reviewing
 - **Write reviews for stock lists**
@@ -58,9 +58,9 @@
    - Implement friend request functionality.
    - View and manage friends.
 6. **Stock List Sharing**
-   - Create and manage stock lists.
-   - Share stock lists with friends and make them public.
-   - View shared and public stock lists.
+   - Create and manage stock lists. x
+   - Share stock lists with friends and make them public. x
+   - View shared and public stock lists. x
 7. **Reviewing**
    - Implement review functionality for stock lists.
    - View, edit, and delete reviews.

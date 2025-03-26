@@ -95,6 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const makePublicButton = document.getElementById("make-stock-list-public");
   const deleteStockListButton = document.getElementById("delete-stock-list");
 
+  const addStockToListForm = document.getElementById("add-stock-to-list-form");
+  const sLNameInput = document.getElementById("stock-list-name-input");
+  const stockCodeInput = document.getElementById("stock-code-list-input");
+
   let userId = null; // Define userId variable
 
   const logSessionCookie = () => {
@@ -117,20 +121,47 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const loadStockLists = async () => {
-    const stockLists = await fetchStockLists(userId);
+    let stockLists = await fetchStockLists(userId);
+    console.log(stockLists);
+    
 
     stockListDropdown.innerHTML = "";
     userStockLists.innerHTML = "";
 
     stockLists.forEach((list) => {
-      const li = document.createElement("li");
-      li.textContent = list.name;
-      userStockLists.appendChild(li);
+      // const li = document.createElement("li");
+      // li.textContent = list.name;
+      // userStockLists.appendChild(li);
+      if (list.user_id == userId) {
+        const option = document.createElement("option");
+        option.value = list.id;
+        option.textContent = list.name;
+        stockListDropdown.appendChild(option);
+      }
+    });
 
-      const option = document.createElement("option");
-      option.value = list.id;
-      option.textContent = list.name;
-      stockListDropdown.appendChild(option);
+
+    stockLists.forEach((list) => {
+      // Create a container for each stock list
+      const listContainer = document.createElement("div");
+      listContainer.className = "stock-list-container";
+
+      // Add the stock list name
+      const listTitle = document.createElement("h3");
+      listTitle.textContent = list.name;
+      listContainer.appendChild(listTitle);
+
+      // Add the stocks in the stock list
+      const stockList = document.createElement("ul");
+      list.stocks.forEach((stockCode) => {
+        const stockItem = document.createElement("li");
+        stockItem.textContent = stockCode;
+        stockList.appendChild(stockItem);
+      });
+      listContainer.appendChild(stockList);
+
+      // Append the container to the userStockLists element
+      userStockLists.appendChild(listContainer);
     });
   };
 
@@ -141,9 +172,52 @@ document.addEventListener("DOMContentLoaded", () => {
     loadStockLists();
   });
 
+  // Event listener for adding a stock to a stock list
+  addStockToListForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const stockListName = sLNameInput.value.trim();
+    const stockCode = stockCodeInput.value;
+    console.log(stockCodeInput);
+    console.log(stockCode);
+
+    if (stockListName && stockCode) {
+      try {
+        // Fetch all stock lists to find the ID of the entered stock list name
+        const stockLists = await fetchStockLists(userId);
+        const stockList = stockLists.find(
+          (list) => list.name === stockListName
+        );
+
+        if (!stockList) {
+          alert(`Stock list "${stockListName}" not found.`);
+          return;
+        }
+
+        // Add the stock to the stock list
+        await addStockToList(stockList.id, stockCode);
+        alert(
+          `Stock "${stockCode}" added to the list "${stockListName}" successfully!`
+        );
+        stockListNameInput.value = ""; // Clear the input field
+        stockCodeInput.value = ""; // Clear the input field
+      } catch (err) {
+        alert("Failed to add stock to the list. Please try again.");
+        console.error(err);
+      }
+    } else {
+      alert("Please enter both the stock list name and stock code.");
+    }
+  });
+
   shareStockListButton.addEventListener("click", async () => {
     const listId = stockListDropdown.value;
-    await shareStockList(userId, listId);
+    const friendEmail = prompt("Enter your friend's email to share the stock list:");
+    if (!friendEmail) {
+      alert("You must enter a valid email address.");
+      return;
+    }
+    
+    await shareStockList(listId, friendEmail, userId);
   });
 
   makePublicButton.addEventListener("click", async () => {
@@ -189,6 +263,8 @@ document.addEventListener("DOMContentLoaded", () => {
     stockSection.style.display = "block"; // Show stock section on homepage
     stats.style.display = "block"; // Show statistics section on homepage
     friendSection.style.display = "block"; // Show friends section on homepage
+    stockListSection.style.display = "block"; // Show stock list section on homepage
+
     // load the stock lists
     loadStockLists();
 
@@ -213,6 +289,8 @@ document.addEventListener("DOMContentLoaded", () => {
     stockSection.style.display = "none"; // Hide stock section on sign-in/sign-up page
     stats.style.display = "none";
     friendSection.style.display = "none"; // Hide friends section on sign-in/sign-up page
+    stockListSection.style.display = "none"; // Show stock list section on homepage
+
   };
 
   checkAuthStatus(loadHomepage, loadAuth, logSessionCookie);
