@@ -56,6 +56,9 @@ export const handlePortfolioClick = (portfolioId, portfolioElement) => {
     stockSection.style.display = "block";
     fetchStocks(portfolioId, stockList);
     displayStatistics(portfolioId);
+
+    statsSection.scrollIntoView({ behavior: "smooth" });
+
   } else {
     stockSection.style.display = "none";
   }
@@ -161,8 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Add "Delete" button if the review belongs to the current user
         // or if the stock list is owned by the user
-
-        if (review.user_id == userId || owner[0].user_id == userId) {
+        if (review.user_id == userId || owner.user_id == userId) {
           const deleteButton = document.createElement("button");
           deleteButton.textContent = "Delete";
           deleteButton.addEventListener("click", () => {
