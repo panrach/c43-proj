@@ -8,6 +8,7 @@ import stockRouter from './routes/stocks.js';
 import statisticsRouter from './routes/statistics.js';
 import friendsRouter from './routes/friends.js';
 import stockListRouter from './routes/stockList.js';
+import reviewsRouter from './routes/reviews.js';
 import cors from 'cors';
 import corsOptions from '../config/corsConfig.js';
 
@@ -31,6 +32,7 @@ app.use('/stocks', stockRouter);
 app.use('/statistics', statisticsRouter);
 app.use('/friends', friendsRouter);
 app.use('/stock-list', stockListRouter);
+app.use('/stock-list-reviews', reviewsRouter);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

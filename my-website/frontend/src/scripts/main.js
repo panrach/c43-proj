@@ -35,8 +35,16 @@ import {
   makeStockListPublic,
   addStockToList,
   deleteStockFromList,
-  deleteStockList,
+  deleteStockList,  
+  getOwner,
 } from "./stockList.js";
+
+import {
+  writeReview,
+  fetchReviews,
+  editReview,
+  deleteReview,
+} from "./reviews.js";
 
 const baseUrl = "http://localhost:3000";
 
@@ -99,10 +107,119 @@ document.addEventListener("DOMContentLoaded", () => {
   const sLNameInput = document.getElementById("stock-list-name-input");
   const stockCodeInput = document.getElementById("stock-code-list-input");
 
+  const reviewsList = document.getElementById("reviews-list");
+  const reviewStockListDropdown = document.getElementById(
+    "review-stock-list-dropdown"
+  );
+  const writeReviewForm = document.getElementById("write-review-form");
+
+  writeReviewForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const stockListId = reviewStockListDropdown.value;
+    const comment = document.getElementById("review-comment").value;
+
+    if (!stockListId || !comment) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    try {
+      const userId = localStorage.getItem("userId");
+      await writeReview(stockListId, userId, comment);
+      alert("Review submitted successfully!");
+      writeReviewForm.reset();
+      displayReviews(stockListId); // Refresh reviews for the selected stock list
+    } catch (err) {
+      console.error("Failed to submit review:", err);
+      alert("Failed to submit review. Please try again.");
+    }
+  });
+
   let userId = null; // Define userId variable
 
   const logSessionCookie = () => {
     console.log("Session Cookie:", document.cookie);
+  };
+
+  const displayReviews = async (stockListId) => {
+    try {
+      const reviews = await fetchReviews(stockListId);
+      const owner = await getOwner(stockListId);
+      console.log(owner);
+      reviewsList.innerHTML = ""; // Clear existing reviews
+
+      if (reviews.length === 0) {
+        reviewsList.innerHTML =
+          "<li>No reviews available for this stock list.</li>";
+        return;
+      }
+      reviews.forEach((review) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${review.username}</strong>: ${review.comment} 
+        `;
+
+        // Add "Delete" button if the review belongs to the current user
+        // or if the stock list is owned by the user
+
+        if (review.user_id == userId || owner[0].user_id == userId) {
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => {
+            deleteReview(review.id)
+              .then(() => {
+                alert("Review deleted successfully!");
+                displayReviews(stockListId); // Refresh reviews
+              })
+              .catch((err) => {
+                console.error("Failed to delete review:", err);
+                alert("Failed to delete review. Please try again.");
+              });
+          });
+          li.appendChild(deleteButton);
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.addEventListener("click", () => {
+            // prompt user to enter new comment
+            const newComment = prompt("Enter new comment:");
+            if (!newComment) {
+              alert("Please enter a valid comment.");
+              return;
+            }
+            editReview(review.id, newComment)
+            // Refresh reviews
+            .then(() => displayReviews(stockListId))
+          });
+          li.appendChild(editButton);
+        }
+        reviewsList.appendChild(li);
+      });
+    } catch (err) {
+      console.error("Failed to fetch reviews:", err);
+      reviewsList.innerHTML =
+        "<li>Error fetching reviews. Please try again later.</li>";
+    }
+  };
+
+  // Event listener for stock list dropdown change
+  reviewStockListDropdown.addEventListener("change", (e) => {
+    const stockListId = e.target.value;
+    if (stockListId) {
+      displayReviews(stockListId);
+    }
+  });
+
+  const populateReviewDropdown = async () => {
+    const stockLists = await fetchStockLists(userId);
+    reviewStockListDropdown.innerHTML =
+      '<option value="" disabled selected>Select a Stock List</option>';
+    stockLists.forEach((list) => {
+      const option = document.createElement("option");
+      option.value = list.id;
+      option.textContent = list.name;
+      reviewStockListDropdown.appendChild(option);
+    });
   };
 
   const updatePortfolioDropdown = async (userId) => {
@@ -123,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const loadStockLists = async () => {
     let stockLists = await fetchStockLists(userId);
     console.log(stockLists);
-    
 
     stockListDropdown.innerHTML = "";
     userStockLists.innerHTML = "";
@@ -139,7 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
         stockListDropdown.appendChild(option);
       }
     });
-
 
     stockLists.forEach((list) => {
       // Create a container for each stock list
@@ -211,23 +326,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   shareStockListButton.addEventListener("click", async () => {
     const listId = stockListDropdown.value;
-    const friendEmail = prompt("Enter your friend's email to share the stock list:");
+    const friendEmail = prompt(
+      "Enter your friend's email to share the stock list:"
+    );
     if (!friendEmail) {
       alert("You must enter a valid email address.");
       return;
     }
-    
+
     await shareStockList(listId, friendEmail, userId);
   });
 
   makePublicButton.addEventListener("click", async () => {
     const listId = stockListDropdown.value;
-    await makeStockListPublic(userId, listId);
+    await makeStockListPublic(listId);
   });
 
   deleteStockListButton.addEventListener("click", async () => {
     const listId = stockListDropdown.value;
-    await deleteStockList(userId, listId);
+    await deleteStockList(listId);
     loadStockLists();
   });
 
@@ -268,6 +385,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // load the stock lists
     loadStockLists();
 
+    // Call this function after user login or when stock lists are loaded
+    populateReviewDropdown();
+
     // Update portfolio dropdown
     await updatePortfolioDropdown(userId);
   };
@@ -290,7 +410,6 @@ document.addEventListener("DOMContentLoaded", () => {
     stats.style.display = "none";
     friendSection.style.display = "none"; // Hide friends section on sign-in/sign-up page
     stockListSection.style.display = "none"; // Show stock list section on homepage
-
   };
 
   checkAuthStatus(loadHomepage, loadAuth, logSessionCookie);

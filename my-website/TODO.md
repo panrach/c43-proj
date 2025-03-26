@@ -35,9 +35,9 @@
 - **View shared and public stock lists** x
 
 ### 7. Reviewing
-- **Write reviews for stock lists**
-- **View reviews for shared and public stock lists**
-- **Edit and delete reviews**
+- **Write reviews for stock lists** x
+- **View reviews for shared and public stock lists** x
+- **Edit and delete reviews** x
 
 ### Order of Implementation
 1. **User Authentication**

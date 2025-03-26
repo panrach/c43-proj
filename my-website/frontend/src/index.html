@@ -89,18 +89,6 @@
             <ul id="friend-requests-list"></ul>
           </section>
           <section id="stock-section">
-            <h2>Stock Data</h2>
-            <input type="text" id="stock-code-input" placeholder="Enter Stock Code" />
-            <select id="interval-select">
-              <option value="7">1 Week</option>
-              <option value="30">1 Month</option>
-              <option value="90">1 Quarter</option>
-              <option value="1825">5 Years</option>
-              <option value="5475">15 Years</option>
-            </select>
-            <button id="fetch-stock-data">Fetch Stock Data</button>
-            <div id="latest-stock-details"></div>
-            <canvas id="historical-stock-chart"></canvas>
             <h2>Add Stock to Portfolio</h2>
             <input type="text" id="stock-search" placeholder="Search Stocks" />
             <ul id="stock-search-results"></ul>
@@ -123,7 +111,19 @@
               />
               <button type="submit">Add Stock</button>
             </form>
-            <div id="stock-details"></div>
+            <h2>Stock Data</h2>
+            <input type="text" id="stock-code-input" placeholder="Enter Stock Code" />
+            <select id="interval-select">
+              <option value="7">1 Week</option>
+              <option value="30">1 Month</option>
+              <option value="90">1 Quarter</option>
+              <option value="1825">5 Years</option>
+              <option value="5475">15 Years</option>
+            </select>
+            <button id="fetch-stock-data">Fetch Stock Data</button>
+            <div id="latest-stock-details"></div>
+            <canvas id="historical-stock-chart"></canvas>
+            <!-- <div id="stock-details"></div> -->
           </section>
           </section id="add-stock-section">
           <section id="portfolio-section">
@@ -139,18 +139,6 @@
             </form>
             <ul id="portfolio-list"></ul>
             <div id="portfolio-details"></div>
-          </section>
-          <section id="statistics-section">
-            <h2>Portfolio Statistics</h2>
-            <div id="covariance-matrix">
-              <h3>Covariance Matrix</h3>
-            </div>
-            <div id="correlation-matrix">
-              <h3>Correlation Matrix</h3>
-            </div>
-            <div id="beta">
-              <h3>Beta</h3>
-            </div>
           </section>
           <section id="add-daily-stock-section">
             <h2>Add New Daily Stock Information</h2>
@@ -199,6 +187,18 @@
               <button type="submit">Add Daily Stock</button>
             </form>
           </section>
+          <section id="statistics-section">
+            <h2>Portfolio Statistics</h2>
+            <div id="covariance-matrix">
+              <h3>Covariance Matrix</h3>
+            </div>
+            <div id="correlation-matrix">
+              <h3>Correlation Matrix</h3>
+            </div>
+            <div id="beta">
+              <h3>Beta</h3>
+            </div>
+          </section>
           <section id="stock-list-section">
             <h2>Stock Lists</h2>
             <h3>Create a New Stock List</h3>
@@ -224,7 +224,23 @@
 
             <h3>View Stock Lists</h3>
             <ul id="user-stock-lists"></ul>
-          
+
+            <div id="review-section">
+              <h3>Write a Review</h3>
+              <form id="write-review-form">
+                <select id="review-stock-list-dropdown" required>
+                  <option value="" disabled selected>Select a Stock List</option>
+                  <!-- Options will be dynamically populated -->
+                </select>
+                <textarea id="review-comment" placeholder="Write your review..." required></textarea>
+                <button type="submit">Submit Review</button>
+            </form>
+            </div>
+
+            <div id="reviews-section">
+              <h3>Reviews</h3>
+              <ul id="reviews-list"></ul>
+            </div>
             
           </section>
         </main>

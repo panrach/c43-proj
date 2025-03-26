@@ -306,4 +306,20 @@ router.post("/add-stock", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// get owner of stock list
+router.get("/owner/:listId", async (req, res) => {
+  const { listId } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT user_id FROM stock_lists WHERE id = $1",
+      [listId]
+    );
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

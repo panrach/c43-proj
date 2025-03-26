@@ -52,6 +52,7 @@ export const shareStockList = async (listId, friendEmail, userId) => {
 
 // Make a stock list public
 export const makeStockListPublic = async (listId) => {
+  console.log("listId being set to public: ", listId); // Debugging log
   try {
     const response = await fetch(`${baseUrl}/make-public`, {
       method: "POST",
@@ -113,3 +114,17 @@ export const deleteStockList = async (listId) => {
     console.error("Error deleting stock list:", err);
   }
 };
+
+export const getOwner = async (listId) => {
+  try {
+    const response = await fetch(`${baseUrl}/owner/${listId}`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to get stock list owner");
+    }
+    return await response.json();
+  } catch (err) {
+    console.error("Error getting stock list owner:", err);
+  }
+}

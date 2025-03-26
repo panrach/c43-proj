@@ -142,7 +142,6 @@ CREATE TABLE reviews (
 	id serial4 NOT NULL,
 	stock_list_id int4 NULL,
 	user_id int4 NULL,
-	rating int4 NOT NULL,
 	"comment" text NULL,
 	created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
 	CONSTRAINT reviews_pkey PRIMARY KEY (id),
@@ -165,6 +164,15 @@ CREATE TABLE stock_list_items (
 	CONSTRAINT stock_list_items_stock_list_id_stock_id_key UNIQUE (stock_list_id, stock_id),
 	CONSTRAINT stock_list_items_stock_id_fkey FOREIGN KEY (stock_id) REFERENCES stocks(id),
 	CONSTRAINT stock_list_items_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id)
+);
+
+CREATE TABLE shared_stock_lists (
+    id SERIAL PRIMARY KEY, -- Unique identifier for each shared record
+    stock_list_id INT NOT NULL, -- References the stock list being shared
+    friend_id INT NOT NULL, -- References the user (friend) with whom the stock list is shared
+    CONSTRAINT shared_stock_lists_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id) ON DELETE CASCADE,
+    CONSTRAINT shared_stock_lists_friend_id_fkey FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT shared_stock_lists_unique UNIQUE (stock_list_id, friend_id) -- Prevent duplicate sharing
 );
 
 CREATE MATERIALIZED VIEW public.stock_statistics_matrix

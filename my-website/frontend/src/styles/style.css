@@ -280,3 +280,87 @@ tr:hover {
 #stock-list-section li button {
   margin-left: 0.5rem;
 }
+
+
+#statistics-section {
+  background-color: #fff;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border-left: 8px solid #88c2e1; /* Blue accent border */
+}
+
+#statistics-section h2 {
+  font-size: 1.75rem;
+  color: #2d3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+#statistics-section > div {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#statistics-section > div h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+#statistics-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+#statistics-section th,
+#statistics-section td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+#statistics-section th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #2d3e50;
+}
+
+#statistics-section tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+#statistics-section tr:hover {
+  background-color: #f0f0f0;
+}
+
+#statistics-section .stat-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+#statistics-section .stat-box h4 {
+  font-size: 1.25rem;
+  color: #2d3e50;
+}
+
+#statistics-section .stat-box span {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #37b7e6;
+}
