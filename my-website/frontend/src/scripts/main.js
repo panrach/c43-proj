@@ -28,6 +28,16 @@ import {
   viewFriendRequests,
 } from "./friends.js";
 
+import {
+  fetchStockLists,
+  createStockList,
+  shareStockList,
+  makeStockListPublic,
+  addStockToList,
+  deleteStockFromList,
+  deleteStockList,
+} from "./stockList.js";
+
 const baseUrl = "http://localhost:3000";
 
 export const handlePortfolioClick = (portfolioId, portfolioElement) => {
@@ -76,6 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const friendsList = document.getElementById("friends-list");
   const friendRequestsList = document.getElementById("friend-requests-list");
 
+  const stockListSection = document.getElementById("stock-list-section");
+  const userStockLists = document.getElementById("user-stock-lists");
+  const createStockListForm = document.getElementById("create-stock-list-form");
+  const stockListNameInput = document.getElementById("stock-list-name");
+  const stockListDropdown = document.getElementById("stock-list-dropdown");
+  const shareStockListButton = document.getElementById("share-stock-list");
+  const makePublicButton = document.getElementById("make-stock-list-public");
+  const deleteStockListButton = document.getElementById("delete-stock-list");
+
   let userId = null; // Define userId variable
 
   const logSessionCookie = () => {
@@ -96,6 +115,47 @@ document.addEventListener("DOMContentLoaded", () => {
       portfolioSelect.appendChild(option);
     });
   };
+
+  const loadStockLists = async () => {
+    const stockLists = await fetchStockLists(userId);
+
+    stockListDropdown.innerHTML = "";
+    userStockLists.innerHTML = "";
+
+    stockLists.forEach((list) => {
+      const li = document.createElement("li");
+      li.textContent = list.name;
+      userStockLists.appendChild(li);
+
+      const option = document.createElement("option");
+      option.value = list.id;
+      option.textContent = list.name;
+      stockListDropdown.appendChild(option);
+    });
+  };
+
+  createStockListForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    await createStockList(userId, stockListNameInput.value);
+    stockListNameInput.value = "";
+    loadStockLists();
+  });
+
+  shareStockListButton.addEventListener("click", async () => {
+    const listId = stockListDropdown.value;
+    await shareStockList(userId, listId);
+  });
+
+  makePublicButton.addEventListener("click", async () => {
+    const listId = stockListDropdown.value;
+    await makeStockListPublic(userId, listId);
+  });
+
+  deleteStockListButton.addEventListener("click", async () => {
+    const listId = stockListDropdown.value;
+    await deleteStockList(userId, listId);
+    loadStockLists();
+  });
 
   stockSearchInput.addEventListener("input", (e) => {
     const query = e.target.value;
@@ -129,6 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
     stockSection.style.display = "block"; // Show stock section on homepage
     stats.style.display = "block"; // Show statistics section on homepage
     friendSection.style.display = "block"; // Show friends section on homepage
+    // load the stock lists
+    loadStockLists();
 
     // Update portfolio dropdown
     await updatePortfolioDropdown(userId);

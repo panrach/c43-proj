@@ -219,3 +219,42 @@ tr:hover {
 #friends-section li button {
   margin-left: 0.5rem;
 }
+
+/* Stock List Section Specific Styles */
+#stock-list-section {
+  background-color: #fff;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+#stock-list-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#stock-list-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#stock-list-section li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+#stock-list-section li:hover {
+  background-color: #f0f0f0;
+}
+
+#stock-list-section li button {
+  margin-left: 0.5rem;
+}
