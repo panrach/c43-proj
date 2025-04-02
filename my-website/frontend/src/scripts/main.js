@@ -46,6 +46,11 @@ import {
   deleteReview,
 } from "./reviews.js";
 
+import {
+  fetchTransactions,
+  displayTransactions
+} from "./transactions.js";
+
 const baseUrl = "http://localhost:3000";
 
 export const handlePortfolioClick = (portfolioId, portfolioElement) => {
@@ -55,9 +60,10 @@ export const handlePortfolioClick = (portfolioId, portfolioElement) => {
   if (stockSection.style.display === "none") {
     stockSection.style.display = "block";
     fetchStocks(portfolioId, stockList);
-    displayStatistics(portfolioId);
-
-    statsSection.scrollIntoView({ behavior: "smooth" });
+    displayTransactions(portfolioId);
+    // Fetch transactions for the selected portfolio
+    // displayStatistics(portfolioId);
+    // statsSection.scrollIntoView({ behavior: "smooth" });
 
   } else {
     stockSection.style.display = "none";
@@ -115,6 +121,51 @@ document.addEventListener("DOMContentLoaded", () => {
     "review-stock-list-dropdown"
   );
   const writeReviewForm = document.getElementById("write-review-form");
+  const portfolioSelectStatistics = document.getElementById("portfolio-select-statistics");
+
+
+  document.getElementById("date-range-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+  
+    // Get the selected portfolio ID from the dropdown
+    const portfolioSelectStatistics = document.getElementById("portfolio-select-statistics");
+    const portfolioId = portfolioSelectStatistics.value;
+  
+    if (!portfolioId) {
+      alert("Please select a portfolio.");
+      return;
+    }
+  
+    const startDate = document.getElementById("start-date").value;
+    const endDate = document.getElementById("end-date").value;
+  
+    if (!startDate || !endDate) {
+      alert("Please select both start and end dates.");
+      return;
+    }
+  
+    try {
+      // Call the function to display statistics with the selected portfolio ID and date range
+      await displayStatistics(portfolioId, startDate, endDate);
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+      alert("Failed to fetch statistics. Please try again.");
+    }
+  });
+
+  const populatePortfolioDropdownStatistics = async (userId) => {
+    const response = await fetch(`${baseUrl}/portfolio/user/${userId}`, {
+      credentials: "include", // Include credentials for session handling
+    });
+    const portfolios = await response.json();
+    portfolioSelectStatistics.innerHTML = '<option value="" disabled selected>Select Portfolio</option>';
+    portfolios.forEach((portfolio) => {
+      const option = document.createElement("option");
+      option.value = portfolio.id;
+      option.textContent = portfolio.name;
+      portfolioSelectStatistics.appendChild(option);
+    });
+  };
 
   writeReviewForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -392,6 +443,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Update portfolio dropdown
     await updatePortfolioDropdown(userId);
+
+    await populatePortfolioDropdownStatistics(userId);
   };
 
   const loadAuth = () => {
@@ -436,6 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
   createPortfolioForm.addEventListener("submit", async (e) => {
     await createPortfolio(e, userId, fetchPortfolios, handlePortfolioClick);
     await updatePortfolioDropdown(userId); // Update portfolio dropdown after creating a new portfolio
+    await populatePortfolioDropdownStatistics(userId); // Update portfolio dropdown for statistics
   });
   depositForm.addEventListener("submit", (e) => depositCash(e, userId));
   withdrawForm.addEventListener("submit", (e) => withdrawCash(e, userId));

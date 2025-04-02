@@ -175,46 +175,4 @@ CREATE TABLE shared_stock_lists (
     CONSTRAINT shared_stock_lists_unique UNIQUE (stock_list_id, friend_id) -- Prevent duplicate sharing
 );
 
-CREATE MATERIALIZED VIEW public.stock_statistics_matrix
-TABLESPACE pg_default
-AS WITH daily_market_avg_close AS (
-    -- Compute the daily market average close price
-    SELECT s."timestamp", 
-           AVG(s."close") AS market_close
-    FROM stocks s
-    GROUP BY s."timestamp"
-), daily_pairs AS (
-    -- Pair up stocks by matching timestamps
-    SELECT s1.code AS stock1,
-           s2.code AS stock2,
-           s1."close" AS close1,
-           s2."close" AS close2
-    FROM stocks s1
-    JOIN stocks s2 
-        ON s1."timestamp" = s2."timestamp" 
-       AND s1.code <= s2.code  -- Prevent duplicate pairs
-    UNION ALL
-    -- Compute each stock’s beta against the market
-    SELECT s1.code AS stock1,
-           s1.code AS stock2,  -- Self-pairing for beta calculation
-           s1."close" AS close1,
-           m.market_close AS close2
-    FROM stocks s1
-    JOIN daily_market_avg_close m 
-        ON s1."timestamp" = m."timestamp"
-)
--- Compute correlation, covariance, and beta
-SELECT stock1, 
-       stock2, 
-       CORR(close1::double precision, close2::double precision) AS correlation,
-       COVAR_POP(close1::double precision, close2::double precision) AS covariance,
-       CASE 
-           WHEN stock1 = stock2 THEN 
-               COVAR_POP(close1::double precision, close2::double precision) / 
-               NULLIF(VAR_POP(close2::double precision), 0)
-           ELSE NULL 
-       END AS beta
-FROM daily_pairs
-GROUP BY stock1, stock2
-WITH DATA;
 ```

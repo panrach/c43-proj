@@ -71,6 +71,7 @@ export const fetchStocks = async (portfolioId, stockList) => {
 
 export const addStock = async (e, fetchStocks) => {
   e.preventDefault();
+  const userId = localStorage.getItem("userId");
   const portfolioId = document.getElementById("portfolio-select").value; // Get the selected portfolio ID from the dropdown
   const stockSymbol = e.target
     .querySelector("input.stock-symbol")
@@ -84,7 +85,7 @@ export const addStock = async (e, fetchStocks) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ portfolioId, shares, stockSymbol }),
+      body: JSON.stringify({ userId, portfolioId, stockSymbol, shares }),
       credentials: "include", // Include credentials for session handling
     });
     if (response.ok) {
@@ -96,7 +97,7 @@ export const addStock = async (e, fetchStocks) => {
         handlePortfolioClick
       ); // Refresh the portfolio list
     } else {
-      alert("Error adding stock");
+      alert(response.message || "Error adding stock"); // Show the error message to the user
     }
   } catch (error) {
     console.error("Error adding stock:", error);

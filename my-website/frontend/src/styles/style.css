@@ -364,3 +364,21 @@ tr:hover {
   font-weight: bold;
   color: #37b7e6;
 }
+
+#transactions-section {
+  margin-top: 20px;
+}
+
+#transactions-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+#transactions-list li {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+#transactions-list li:last-child {
+  border-bottom: none;
+}

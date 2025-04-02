@@ -1,9 +1,9 @@
 const baseUrl = "http://localhost:3000";
 
-export const fetchCovarianceMatrix = async (portfolioId) => {
+export const fetchCovarianceMatrix = async (portfolioId, startDate, endDate) => {
   try {
     const response = await fetch(
-      `${baseUrl}/statistics/covariance/${portfolioId}`,
+      `${baseUrl}/statistics/covariance/${portfolioId}?startDate=${startDate}&endDate=${endDate}`,
       {
         credentials: "include",
       }
@@ -14,10 +14,10 @@ export const fetchCovarianceMatrix = async (portfolioId) => {
   }
 };
 
-export const fetchCorrelationMatrix = async (portfolioId) => {
+export const fetchCorrelationMatrix = async (portfolioId, startDate, endDate) => {
   try {
     const response = await fetch(
-      `${baseUrl}/statistics/correlation/${portfolioId}`,
+      `${baseUrl}/statistics/correlation/${portfolioId}?startDate=${startDate}&endDate=${endDate}`,
       {
         credentials: "include",
       }
@@ -28,9 +28,9 @@ export const fetchCorrelationMatrix = async (portfolioId) => {
   }
 };
 
-export const fetchBeta = async (portfolioId) => {
+export const fetchBeta = async (portfolioId, startDate, endDate) => {
   try {
-    const response = await fetch(`${baseUrl}/statistics/beta/${portfolioId}`, {
+    const response = await fetch(`${baseUrl}/statistics/beta/${portfolioId}?startDate=${startDate}&endDate=${endDate}`, {
       credentials: "include",
     });
     return await response.json();
@@ -53,25 +53,17 @@ const formatMatrix = (matrix) => {
 
 const formatBeta = (beta) => {
   let formatted = "<table><tr><th>Stock</th><th>Beta</th></tr>";
-  for (const stock1 in beta) {
-    for (const stock2 in beta[stock1]) {
-      if (stock1 === stock2) {
-        formatted += `<tr><td>${stock1}</td><td>${beta[stock1][stock2]}</td></tr>`;
-      }
-    }
+  for (const entry of beta) {
+    formatted += `<tr><td>${entry.stock_code}</td><td>${entry.beta.toFixed(6)}</td></tr>`;
   }
   formatted += "</table>";
   return formatted;
 };
 
-export const displayStatistics = async (portfolioId) => {
-  const covarianceMatrix = await fetchCovarianceMatrix(portfolioId);
-  const correlationMatrix = await fetchCorrelationMatrix(portfolioId);
-  const beta = await fetchBeta(portfolioId);
-
-  console.log(covarianceMatrix);
-  console.log(correlationMatrix);
-  console.log(beta);
+export const displayStatistics = async (portfolioId, startDate, endDate) => {
+  const covarianceMatrix = await fetchCovarianceMatrix(portfolioId, startDate, endDate);
+  const correlationMatrix = await fetchCorrelationMatrix(portfolioId, startDate, endDate);
+  const beta = await fetchBeta(portfolioId, startDate, endDate);
 
   document.getElementById("covariance-matrix").innerHTML = `
     <h3>Covariance Matrix</h3>

@@ -139,9 +139,28 @@
             </form>
             <ul id="portfolio-list"></ul>
             <div id="portfolio-details"></div>
+            <div id="transactions-section">
+              <h3>Transactions</h3>
+              <ul id="transactions-list">
+                <!-- Transactions will be dynamically populated here -->
+              </ul>
+            </div>
           </section>
           <section id="statistics-section">
             <h2>Portfolio Statistics</h2>
+            <!-- Date Range Form -->
+            <form id="date-range-form">
+              <label for="portfolio-select-statistics">Select Portfolio:</label>
+              <select id="portfolio-select-statistics" required>
+                <option value="" disabled selected>Select Portfolio</option>
+                <!-- Portfolio options will be dynamically populated -->
+              </select>
+              <label for="start-date">Start Date:</label>
+              <input type="date" id="start-date" required />
+              <label for="end-date">End Date:</label>
+              <input type="date" id="end-date" required />
+              <button type="submit">Fetch Statistics</button>
+            </form>
             <div id="covariance-matrix">
               <h3>Covariance Matrix</h3>
             </div>
