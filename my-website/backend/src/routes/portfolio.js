@@ -59,7 +59,8 @@ router.post("/deposit", async (req, res) => {
 });
 
 router.post("/withdraw", async (req, res) => {
-  const { userId, amount } = req.body;
+  let { userId, amount } = req.body;
+  amount = parseFloat(amount);
   if (amount <= 0) {
     return res
       .status(400)
@@ -71,7 +72,11 @@ router.post("/withdraw", async (req, res) => {
       "SELECT balance FROM users WHERE id = $1",
       [userId]
     );
-    if (amount > userBalance.rows[0].balance) {
+    const userBal = userBalance.rows[0].balance;
+    console.log("User balance:", userBal);
+    console.log("Withdrawal amount:", amount);
+    console.log(amount > userBal);
+    if (amount > userBal) {
       return res.status(400).json({ error: "Insufficient funds" });
     }
 
