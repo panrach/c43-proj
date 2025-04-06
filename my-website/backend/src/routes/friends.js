@@ -17,6 +17,19 @@ router.post("/send-request", async (req, res) => {
     const userId = userResult.rows[0].id;
     const friendId = friendResult.rows[0].id;
 
+    // check that they are not already friends or that a request is not already sent
+    const existingFriendship = await pool.query(
+      `SELECT * FROM friends WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`,
+      [userId, friendId]
+    );
+    if (existingFriendship.rows.length > 0) {
+      return res.status(400).json({ error: "Friend request already sent or you are already friends" });
+    }
+    // check that the user is not sending a request to themselves
+    if (userId === friendId) {
+      return res.status(400).json({ error: "You cannot send a friend request to yourself" });
+    }
+
     const result = await pool.query(
       `INSERT INTO friends (user_id, friend_id, status) VALUES ($1, $2, 'pending') RETURNING *`,
       [userId, friendId]

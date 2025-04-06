@@ -123,6 +123,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const writeReviewForm = document.getElementById("write-review-form");
   const portfolioSelectStatistics = document.getElementById("portfolio-select-statistics");
 
+  const navBar = document.createElement("nav");
+  navBar.id = "main-nav";
+  navBar.innerHTML = `
+    <ul>
+      <li><a href="#portfolio-section">Portfolios</a></li>
+      <li><a href="#stock-section">Stocks</a></li>
+      <li><a href="#statistics-section">Statistics</a></li>
+      <li><a href="#friends-section">Friends</a></li>
+      <li><a href="#stock-list-section">Stock Lists</a></li>
+    </ul>
+  `;
+  document.body.insertBefore(navBar, document.body.firstChild);
+
+  // Add smooth scrolling to sections
+  const navLinks = navBar.querySelectorAll("a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute("href").substring(1);
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+
 
   document.getElementById("date-range-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -147,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Call the function to display statistics with the selected portfolio ID and date range
       await displayStatistics(portfolioId, startDate, endDate);
+      e.target.reset(); // Reset the form after submission
     } catch (error) {
       console.error("Error fetching statistics:", error);
       alert("Failed to fetch statistics. Please try again.");
@@ -337,6 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     await createStockList(userId, stockListNameInput.value);
     stockListNameInput.value = "";
+    e.target.reset(); // Reset the form after submission
     loadStockLists();
   });
 
@@ -345,8 +373,6 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const stockListName = sLNameInput.value.trim();
     const stockCode = stockCodeInput.value;
-    console.log(stockCodeInput);
-    console.log(stockCode);
 
     if (stockListName && stockCode) {
       try {
@@ -368,6 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         stockListNameInput.value = ""; // Clear the input field
         stockCodeInput.value = ""; // Clear the input field
+        e.target.reset(); // Reset the form after submission
       } catch (err) {
         alert("Failed to add stock to the list. Please try again.");
         console.error(err);
@@ -561,6 +588,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listener for viewing friends
   viewFriendsButton.addEventListener("click", async () => {
+    // clear the list (in case there is requests displayed or something else)
+    friendsList.innerHTML = "";
+    friendRequestsList.innerHTML = "";
     const userEmail = localStorage.getItem("userEmail");
     const friends = await viewFriends(userEmail);
     displayFriends(friends);
@@ -568,6 +598,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listener for viewing friend requests
   viewFriendRequestsButton.addEventListener("click", async () => {
+    // clear the list (in case there is friends displayed or something else)
+    friendsList.innerHTML = "";
+    friendRequestsList.innerHTML = "";
     const userEmail = localStorage.getItem("userEmail");
     const requests = await viewFriendRequests(userEmail);
     displayFriendRequests(requests);

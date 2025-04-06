@@ -137,10 +137,17 @@ router.delete("/delete-stock/:listId/:stockCode", async (req, res) => {
 router.delete("/delete-list/:listId", async (req, res) => {
   const { listId } = req.params;
   try {
+    // Delete related rows in the reviews table
+    await pool.query("DELETE FROM reviews WHERE stock_list_id = $1", [listId]);
+
+    // Delete related rows in the stock_list_items table
     await pool.query("DELETE FROM stock_list_items WHERE stock_list_id = $1", [
       listId,
     ]);
+
+    // Delete the stock list itself
     await pool.query("DELETE FROM stock_lists WHERE id = $1", [listId]);
+
     res.status(200).json({ message: "Stock list deleted successfully" });
   } catch (err) {
     console.error(err);
@@ -166,29 +173,6 @@ router.post("/add-stock", async (req, res) => {
       [listId, stockId]
     );
     res.status(201).json({ message: "Stock added to stock list successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// View shared and public stock lists
-router.get("/view/:userId", async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const result = await pool.query(
-      `
-    SELECT sl.*, 
-            array_agg(s.code) AS stocks
-    FROM stock_lists sl
-    LEFT JOIN stock_list_items sli ON sl.id = sli.stock_list_id
-    LEFT JOIN stocks s ON sli.stock_id = s.id
-    WHERE sl.is_public = true OR sl.user_id = $1
-    GROUP BY sl.id
-  `,
-      [userId]
-    );
-    res.status(200).json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

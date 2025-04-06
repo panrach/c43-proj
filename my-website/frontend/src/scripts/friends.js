@@ -16,6 +16,7 @@ export const sendFriendRequest = async (userEmail, friendEmail) => {
     const result = await response.json();
     return result;
   } catch (error) {
+    alert("Error sending friend request");
     console.error("Error sending friend request:", error);
   }
 };

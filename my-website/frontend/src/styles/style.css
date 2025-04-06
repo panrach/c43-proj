@@ -20,12 +20,6 @@ header {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: bold;
-}
-
 main {
   padding: 2rem;
   max-width: 1000px;
@@ -38,7 +32,7 @@ main {
   margin-bottom: 2rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  border-left: 8px solid #ff6f61; /* Add a left border accent */
+  border-left: 8px solid #88c2e1; /* Add a left border accent */
 }
 
 form {
@@ -82,16 +76,17 @@ button {
   padding: 1rem;
   font-size: 1rem;
   color: #fff;
-  background-color: #6997af; /* Brighter button color */
+  background-color: #eab9b9; /* Brighter button color */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
   margin-bottom: 1rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #688da1; /* Darker shade for hover */
+  background-color: #d2a7a7; /* Darker shade for hover */
+  transform: translateY(-2px); /* Slight lift on hover */
 }
 
 #auth-status {
@@ -156,6 +151,12 @@ footer {
 #logout-button {
   float: right;
   margin-top: 25px;
+  margin-right: 25px;
+  background-color: red;
+}
+
+#logout-button:hover {
+  transform: translateY(-2px); /* Slight lift on hover */
 }
 
 .dropdown {
@@ -243,44 +244,93 @@ tr:hover {
 
 /* Stock List Section Specific Styles */
 #stock-list-section {
-  background-color: #fff;
+  background-color: #ffffff; /* Clean white background */
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  border-left: 8px solid #88c2e1; /* Blue accent border */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  border-radius: 12px; /* Slightly more rounded corners */
+  border-left: 6px solid #6997af; /* Green accent border */
+}
+
+#stock-list-section h2 {
+  font-size: 2rem;
+  color: #000000;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0; /* Subtle divider */
+  padding-bottom: 0.5rem;
+}
+
+#stock-list-section h3 {
+  font-size: 1.5rem;
+  color: #000000; /* Green for headings */
+  margin-bottom: 1rem;
 }
 
 #stock-list-section form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+#stock-list-section form input,
+#stock-list-section form button {
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#stock-list-section form input:focus {
+  border-color: #6997af; /* Green focus border */
+  outline: none;
+}
+
+#stock-list-section form button {
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 #stock-list-section ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
 #stock-list-section li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 0.75rem;
-  transition: background-color 0.3s ease;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9; /* Light background for list items */
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#stock-list-section li:hover {
-  background-color: #f2f2f2;
+#stock-list-section li:hover   {
+  background-color: #e9edf8; /* Light green hover effect */
+  transform: translateY(-2px); /* Slight lift on hover */
 }
 
 #stock-list-section li button {
-  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  color: white;
+  background-color: #f44336; /* Red for delete button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
+#stock-list-section li button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
 
 #statistics-section {
   background-color: #fff;
@@ -382,3 +432,98 @@ tr:hover {
 #transactions-list li:last-child {
   border-bottom: none;
 }
+
+/* Ensure the navigation bar stays fixed at the top */
+#main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #88c2e1;
+  color: white;
+  z-index: 1000;
+  padding: 10px 0;
+}
+
+#main-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around;
+}
+
+#main-nav li {
+  padding: 0 10px;
+}
+
+#main-nav a {
+  color: white;
+  text-decoration: none;
+}
+
+#main-nav a:hover {
+  text-decoration: underline;
+}
+
+/* Add some padding to the body to prevent content from being hidden under the fixed nav bar */
+body {
+  padding-top: 60px; /* Adjust this value based on the height of your nav bar */
+}
+
+/* Cash Management Section */
+#cash-management {
+  background-color: #fefefe; /* Soft white background */
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  border-radius: 12px; /* Slightly rounded corners */
+  border-left: 6px solid #88c2e1; /* Purple accent border */
+}
+
+#cash-management h2 {
+  font-size: 1.75rem;
+  color: #3a3a3a; /* Dark gray for the heading */
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 2px solid #e0e0e0; /* Subtle divider */
+  padding-bottom: 0.5rem;
+}
+
+#cash-management #cash-balance {
+  font-size: 1.25rem;
+  color: #28a745; /* Green for positive balance */
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+#cash-management form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+#cash-management form input {
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db; /* Light gray border */
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#cash-management form input:focus {
+  border-color: #6c63ff; /* Purple focus border */
+  box-shadow: 0 0 5px rgba(108, 99, 255, 0.5); /* Subtle purple glow */
+  outline: none;
+}
+
+#cash-management form button {
+  padding: 1rem;
+  font-size: 1rem;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+} 

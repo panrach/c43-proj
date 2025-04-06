@@ -114,10 +114,13 @@ router.get("/:portfolioId/value", async (req, res) => {
     // Get stock holdings
     const holdingsResult = await pool.query(
       `SELECT sh.stock_code, sh.shares, s.close AS last_close_price
-             FROM stock_holdings sh
-             JOIN stocks s ON sh.stock_code = s.code
-             WHERE sh.portfolio_id = $1
-             ORDER BY s.timestamp DESC`,
+       FROM stock_holdings sh
+       JOIN (
+         SELECT DISTINCT ON (code) code, close
+         FROM stocks
+         ORDER BY code, timestamp DESC
+       ) s ON sh.stock_code = s.code
+       WHERE sh.portfolio_id = $1`,
       [portfolioId]
     );
 
@@ -125,11 +128,12 @@ router.get("/:portfolioId/value", async (req, res) => {
 
     // Calculate market value
     let marketValue = 0;
+    console.log("Holdings:", holdings);
     holdings.forEach((holding) => {
+      console.log("Holding:", holding);
+      console.log("Shares:", holding.shares);
       marketValue += holding.shares * holding.last_close_price;
     });
-
-    console.log("Market value:", marketValue);
 
     res.status(200).json({ marketValue });
   } catch (err) {
