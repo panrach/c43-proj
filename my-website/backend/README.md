@@ -20,12 +20,14 @@ To get started with the backend, follow these steps:
 
    The server will start on the default port (usually 3000).
 
-## Folder Structure
-
-- **src/**: Contains the source code for the backend application.
-  - **app.js**: The main entry point of the application.
-  - **routes/**: Contains route definitions.
-    - **index.js**: Defines the API routes.
+3. **Create the env file in ./backend/db**
+```txt
+PG_HOST=localhost
+PG_PORT=5432
+PG_USER=postgres
+PG_PWD=yourpassword
+PG_DB=mydb
+```
 
 ## DB Schema
 
