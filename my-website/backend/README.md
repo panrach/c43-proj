@@ -12,15 +12,7 @@ To get started with the backend, follow these steps:
    npm install
    ```
 
-2. **Run the Server**: After installing the dependencies, you can start the server with the following command:
-
-   ```
-   npm start
-   ```
-
-   The server will start on the default port (usually 3000).
-
-3. **Create the env file in ./backend/db**
+2. **Create the env file in ./backend/db**
 ```txt
 PG_HOST=localhost
 PG_PORT=5432
@@ -28,6 +20,10 @@ PG_USER=postgres
 PG_PWD=yourpassword
 PG_DB=mydb
 ```
+
+3. Run the DB migration as described in the DB Schema section
+
+4. Go back to ./my-website/README.md and continue the setup
 
 ## DB Schema
 
