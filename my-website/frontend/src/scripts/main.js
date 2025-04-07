@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Call the function to display statistics with the selected portfolio ID and date range
       await displayStatistics(portfolioId, startDate, endDate);
-      e.target.reset(); // Reset the form after submission
+      event.target.reset(); // Reset the form after successful submission
     } catch (error) {
       console.error("Error fetching statistics:", error);
       alert("Failed to fetch statistics. Please try again.");

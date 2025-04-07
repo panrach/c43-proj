@@ -30,30 +30,32 @@ To get started with the backend, follow these steps:
 ## DB Schema
 
 ```sql
--- public.stocks definition
+CREATE TABLE stock_statistics (
+	id serial4 NOT NULL,
+	stock1 varchar(10) NOT NULL,
+	stock2 varchar(10) NOT NULL,
+	covariance numeric NULL,
+	correlation numeric NULL,
+	beta numeric NULL,
+	start_date date NOT NULL,
+	end_date date NOT NULL,
+	CONSTRAINT stock_statistics_pkey PRIMARY KEY (id),
+	CONSTRAINT stock_statistics_stock1_stock2_check CHECK ((((stock1)::text <> (stock2)::text) OR (beta IS NOT NULL))),
+	CONSTRAINT stock_statistics_time_range_unique UNIQUE (stock1, stock2, start_date, end_date),
+	CONSTRAINT stock_statistics_unique UNIQUE (stock1, stock2, start_date, end_date)
+);
 
--- Drop table
-
--- DROP TABLE stocks;
-
-	CREATE TABLE stocks (
-		id serial4 NOT NULL,
-		"timestamp" date NULL,
-		"open" numeric NULL,
-		high numeric NULL,
-		low numeric NULL,
-		"close" numeric NULL,
-		volume int8 NULL,
-		code varchar(10) NOT NULL,
-		CONSTRAINT stocks_pkey PRIMARY KEY (id)
-	);
-
-
--- public.users definition
-
--- Drop table
-
--- DROP TABLE users;
+CREATE TABLE stocks (
+	id serial4 NOT NULL,
+	"timestamp" date NULL,
+	"open" numeric NULL,
+	high numeric NULL,
+	low numeric NULL,
+	"close" numeric NULL,
+	volume int8 NULL,
+	code varchar(10) NOT NULL,
+	CONSTRAINT stocks_pkey PRIMARY KEY (id)
+);
 
 CREATE TABLE users (
 	id serial4 NOT NULL,
@@ -66,13 +68,6 @@ CREATE TABLE users (
 	CONSTRAINT users_username_key UNIQUE (username)
 );
 
-
--- public.friends definition
-
--- Drop table
-
--- DROP TABLE friends;
-
 CREATE TABLE friends (
 	id serial4 NOT NULL,
 	user_id int4 NULL,
@@ -83,13 +78,6 @@ CREATE TABLE friends (
 	CONSTRAINT friends_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-
--- public.portfolios definition
-
--- Drop table
-
--- DROP TABLE portfolios;
-
 CREATE TABLE portfolios (
 	id serial4 NOT NULL,
 	user_id int4 NULL,
@@ -97,13 +85,6 @@ CREATE TABLE portfolios (
 	CONSTRAINT portfolios_pkey PRIMARY KEY (id),
 	CONSTRAINT portfolios_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-
--- public.stock_holdings definition
-
--- Drop table
-
--- DROP TABLE stock_holdings;
 
 CREATE TABLE stock_holdings (
 	id serial4 NOT NULL,
@@ -115,13 +96,6 @@ CREATE TABLE stock_holdings (
 	CONSTRAINT stock_holdings_portfolio_id_fkey FOREIGN KEY (portfolio_id) REFERENCES portfolios(id)
 );
 
-
--- public.stock_lists definition
-
--- Drop table
-
--- DROP TABLE stock_lists;
-
 CREATE TABLE stock_lists (
 	id serial4 NOT NULL,
 	user_id int4 NULL,
@@ -131,12 +105,16 @@ CREATE TABLE stock_lists (
 	CONSTRAINT stock_lists_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-
--- public.reviews definition
-
--- Drop table
-
--- DROP TABLE reviews;
+CREATE TABLE transactions (
+	id serial4 NOT NULL,
+	user_id int4 NOT NULL,
+	"type" varchar(50) NOT NULL,
+	amount numeric NOT NULL,
+	stock_code varchar(10) NULL,
+	"timestamp" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT transactions_pkey PRIMARY KEY (id),
+	CONSTRAINT transactions_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
 CREATE TABLE reviews (
 	id serial4 NOT NULL,
@@ -149,12 +127,15 @@ CREATE TABLE reviews (
 	CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-
--- public.stock_list_items definition
-
--- Drop table
-
--- DROP TABLE stock_list_items;
+CREATE TABLE shared_stock_lists (
+	id serial4 NOT NULL,
+	stock_list_id int4 NOT NULL,
+	friend_id int4 NOT NULL,
+	CONSTRAINT shared_stock_lists_pkey PRIMARY KEY (id),
+	CONSTRAINT shared_stock_lists_unique UNIQUE (stock_list_id, friend_id),
+	CONSTRAINT shared_stock_lists_friend_id_fkey FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
+	CONSTRAINT shared_stock_lists_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id) ON DELETE CASCADE
+);
 
 CREATE TABLE stock_list_items (
 	id serial4 NOT NULL,
@@ -165,14 +146,4 @@ CREATE TABLE stock_list_items (
 	CONSTRAINT stock_list_items_stock_id_fkey FOREIGN KEY (stock_id) REFERENCES stocks(id),
 	CONSTRAINT stock_list_items_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id)
 );
-
-CREATE TABLE shared_stock_lists (
-    id SERIAL PRIMARY KEY, -- Unique identifier for each shared record
-    stock_list_id INT NOT NULL, -- References the stock list being shared
-    friend_id INT NOT NULL, -- References the user (friend) with whom the stock list is shared
-    CONSTRAINT shared_stock_lists_stock_list_id_fkey FOREIGN KEY (stock_list_id) REFERENCES stock_lists(id) ON DELETE CASCADE,
-    CONSTRAINT shared_stock_lists_friend_id_fkey FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT shared_stock_lists_unique UNIQUE (stock_list_id, friend_id) -- Prevent duplicate sharing
-);
-
 ```
