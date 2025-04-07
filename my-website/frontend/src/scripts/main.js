@@ -70,6 +70,35 @@ export const handlePortfolioClick = (portfolioId, portfolioElement) => {
   }
 };
 
+const createNavbar = () => {
+
+  const navBar = document.createElement("nav");
+  navBar.id = "main-nav";
+  navBar.innerHTML = `
+    <ul>
+      <li><a href="#portfolio-section">Portfolios</a></li>
+      <li><a href="#stock-section">Stocks</a></li>
+      <li><a href="#statistics-section">Statistics</a></li>
+      <li><a href="#friends-section">Friends</a></li>
+      <li><a href="#stock-list-section">Stock Lists</a></li>
+    </ul>
+  `;
+  document.body.insertBefore(navBar, document.body.firstChild);
+
+  // Add smooth scrolling to sections
+  const navLinks = navBar.querySelectorAll("a");
+  navLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute("href").substring(1);
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const authStatus = document.getElementById("auth-status");
   const registerForm = document.getElementById("register-form");
@@ -122,32 +151,6 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const writeReviewForm = document.getElementById("write-review-form");
   const portfolioSelectStatistics = document.getElementById("portfolio-select-statistics");
-
-  const navBar = document.createElement("nav");
-  navBar.id = "main-nav";
-  navBar.innerHTML = `
-    <ul>
-      <li><a href="#portfolio-section">Portfolios</a></li>
-      <li><a href="#stock-section">Stocks</a></li>
-      <li><a href="#statistics-section">Statistics</a></li>
-      <li><a href="#friends-section">Friends</a></li>
-      <li><a href="#stock-list-section">Stock Lists</a></li>
-    </ul>
-  `;
-  document.body.insertBefore(navBar, document.body.firstChild);
-
-  // Add smooth scrolling to sections
-  const navLinks = navBar.querySelectorAll("a");
-  navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const targetId = link.getAttribute("href").substring(1);
-      const targetSection = document.getElementById(targetId);
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  });
 
 
   document.getElementById("date-range-form").addEventListener("submit", async (event) => {
@@ -465,6 +468,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // load the stock lists
     loadStockLists();
 
+    // creat the navbar
+    createNavbar();
+
     // Call this function after user login or when stock lists are loaded
     populateReviewDropdown();
 
@@ -492,6 +498,12 @@ document.addEventListener("DOMContentLoaded", () => {
     stats.style.display = "none";
     friendSection.style.display = "none"; // Hide friends section on sign-in/sign-up page
     stockListSection.style.display = "none"; // Show stock list section on homepage
+
+    // Remove the navbar if it exists
+    const navBar = document.getElementById("main-nav");
+    if (navBar) {
+      navBar.remove();
+  }
   };
 
   checkAuthStatus(loadHomepage, loadAuth, logSessionCookie);
