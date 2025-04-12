@@ -57,14 +57,15 @@ const calculateAndCacheCovariance = async (portfolioId, startDate, endDate) => {
       dr1.stock_code < dr2.stock_code -- Avoid duplicates
     GROUP BY 
       dr1.stock_code, dr2.stock_code
+    HAVING 
+      COUNT(dr1.daily_return) > 1 AND COUNT(dr2.daily_return) > 1 -- Ensure sufficient data points
     ON CONFLICT (stock1, stock2, start_date, end_date)
     DO UPDATE SET covariance = EXCLUDED.covariance
     WHERE stock_statistics.covariance IS NULL;
   `;
-  const result = await pool.query(query, [portfolioId, startDate, endDate]);
-  console.log("Covariance calculation result:", result.rows);
-  return result;
+  await pool.query(query, [portfolioId, startDate, endDate]);
 };
+
 // Get the covariance matrix of the stocks in a portfolio
 router.get("/covariance/:portfolioId", async (req, res) => {
   const { portfolioId } = req.params;
@@ -160,6 +161,8 @@ const calculateAndCacheCorrelation = async (portfolioId, startDate, endDate) => 
       dr1.stock_code < dr2.stock_code -- Avoid duplicates
     GROUP BY 
       dr1.stock_code, dr2.stock_code
+    HAVING 
+      COUNT(dr1.daily_return) > 1 AND COUNT(dr2.daily_return) > 1 -- Ensure sufficient data points
     ON CONFLICT (stock1, stock2, start_date, end_date)
     DO UPDATE SET correlation = EXCLUDED.correlation
     WHERE stock_statistics.correlation IS NULL;
@@ -257,6 +260,8 @@ const calculateAndCacheBeta = async (portfolioId, startDate, endDate) => {
       $3 AS end_date
     FROM daily_pairs
     GROUP BY stock1, stock2
+    HAVING 
+      COUNT(close1) > 1 AND COUNT(close2) > 1 -- Ensure sufficient data points
     ON CONFLICT (stock1, stock2, start_date, end_date)
     DO UPDATE SET beta = EXCLUDED.beta
     WHERE stock_statistics.beta IS NULL;
@@ -265,6 +270,7 @@ const calculateAndCacheBeta = async (portfolioId, startDate, endDate) => {
 };
 
 const formatBeta = (rows) => {
+  console.log("Formatting beta rows:", rows);
   return rows.map(row => ({
     stock_code: row.stock_code,
     beta: parseFloat(row.beta) // Convert beta from string to a float
