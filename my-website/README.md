@@ -99,6 +99,7 @@ CREATE TABLE friends (
 	id serial4 NOT NULL,
 	user_id int4 NULL,
 	friend_id int4 NULL,
+	last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	status varchar(20) NOT NULL,
 	CONSTRAINT friends_pkey PRIMARY KEY (id),
 	CONSTRAINT friends_friend_id_fkey FOREIGN KEY (friend_id) REFERENCES users(id),
