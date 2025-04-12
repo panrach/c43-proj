@@ -38,6 +38,16 @@ router.post("/send-request", async (req, res) => {
       if (status === "deleted" && new Date(last_updated) > fiveMinutesAgo) {
         return res.status(400).json({ error: "You can re-send the request after 5 minutes" });
       }
+
+      // Update the existing request to 'pending' and update the timestamp
+      const updateResult = await pool.query(
+        `UPDATE friends 
+          SET status = 'pending', last_updated = CURRENT_TIMESTAMP 
+          WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1) 
+          RETURNING *`,
+        [userId, friendId]
+      );
+      return res.status(200).json(updateResult.rows[0]);
     }
 
     const result = await pool.query(

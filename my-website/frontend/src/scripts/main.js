@@ -99,6 +99,8 @@ const createNavbar = () => {
   });
 }
 
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const authStatus = document.getElementById("auth-status");
   const registerForm = document.getElementById("register-form");
@@ -151,6 +153,46 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const writeReviewForm = document.getElementById("write-review-form");
   const portfolioSelectStatistics = document.getElementById("portfolio-select-statistics");
+
+  const clearDOM = () => {
+    console.log("Clearing DOM...");
+    // Clear friends list
+    friendsList.innerHTML = "";
+    friendRequestsList.innerHTML = "";
+  
+    // Clear portfolio list and dropdowns
+    portfolioList.innerHTML = "";
+    portfolioSelect.innerHTML = '<option value="" disabled selected>Select Portfolio</option>';
+    portfolioSelectStatistics.innerHTML = '<option value="" disabled selected>Select Portfolio</option>';
+  
+    // Clear stock search results
+    stockSearchResults.innerHTML = "";
+  
+    // Clear stock list section
+    userStockLists.innerHTML = "";
+    stockListDropdown.innerHTML = '<option value="" disabled selected>Select Stock List</option>';
+  
+    // Clear reviews list
+    reviewsList.innerHTML = "";
+  
+    // Reset input fields
+    friendEmailInput.value = "";
+    stockSearchInput.value = "";
+    stockListNameInput.value = "";
+    stockCodeInput.value = "";
+    document.getElementById("review-comment").value = "";
+  
+    // Reset cash balance display
+    cashBalanceElement.innerText = "";
+  
+    // Hide any dynamically displayed sections
+    stockSection.style.display = "none";
+    portfolioSection.style.display = "none";
+    addDailyStockForm.style.display = "none";
+    stats.style.display = "none";
+    friendSection.style.display = "none";
+    stockListSection.style.display = "none";
+  };
 
 
   document.getElementById("date-range-form").addEventListener("submit", async (event) => {
@@ -503,7 +545,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const navBar = document.getElementById("main-nav");
     if (navBar) {
       navBar.remove();
-  }
+    }
+    clearDOM(); // Clear the DOM when logging out
   };
 
   checkAuthStatus(loadHomepage, loadAuth, logSessionCookie);
