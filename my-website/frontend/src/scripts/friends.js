@@ -11,7 +11,7 @@ export const sendFriendRequest = async (userEmail, friendEmail) => {
       body: JSON.stringify({ userEmail, friendEmail }),
     });
     if (!response.ok) {
-      throw new Error("Failed to send friend request");
+      throw new Error("Failed to send friend request", response.error);
     }
     const result = await response.json();
     return result;

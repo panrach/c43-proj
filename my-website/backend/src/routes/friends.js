@@ -17,17 +17,27 @@ router.post("/send-request", async (req, res) => {
     const userId = userResult.rows[0].id;
     const friendId = friendResult.rows[0].id;
 
-    // check that they are not already friends or that a request is not already sent
-    const existingFriendship = await pool.query(
-      `SELECT * FROM friends WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`,
+    // Check if a request already exists
+    const existingRequest = await pool.query(
+      `SELECT status, last_updated 
+       FROM friends 
+       WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1)`,
       [userId, friendId]
     );
-    if (existingFriendship.rows.length > 0) {
-      return res.status(400).json({ error: "Friend request already sent or you are already friends" });
-    }
-    // check that the user is not sending a request to themselves
-    if (userId === friendId) {
-      return res.status(400).json({ error: "You cannot send a friend request to yourself" });
+
+    if (existingRequest.rows.length > 0) {
+      const { status, last_updated } = existingRequest.rows[0];
+
+      // If the request is pending or accepted, reject the new request
+      if (status === "pending" || status === "accepted") {
+        return res.status(400).json({ error: "Friend request already sent or you are already friends" });
+      }
+
+      // If the request was rejected, check if 5 minutes have passed
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      if (status === "deleted" && new Date(last_updated) > fiveMinutesAgo) {
+        return res.status(400).json({ error: "You can re-send the request after 5 minutes" });
+      }
     }
 
     const result = await pool.query(
@@ -133,7 +143,10 @@ router.delete("/delete", async (req, res) => {
     const friendId = friendResult.rows[0].id;
 
     const result = await pool.query(
-      `DELETE FROM friends WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1) RETURNING *`,
+      `UPDATE friends 
+       SET status = 'deleted', last_updated = CURRENT_TIMESTAMP 
+       WHERE (user_id = $1 AND friend_id = $2) OR (user_id = $2 AND friend_id = $1) 
+       RETURNING *`,
       [userId, friendId]
     );
     res.status(200).json(result.rows[0]);
